@@ -342,12 +342,69 @@ const Calculator = () => {
   };
   useHotkey('shift+Minus', opInvertSign);
 
+  const [degrees, setDegrees] = useLocalStorage('calculator-degrees', false)
+  const toggleDegrees = () => {
+    setDegrees(!degrees)
+  }
+
+  const opLog10 = () => {
+    unaryOp(x => Math.log10(x))
+  }
+
+  const opLn = () => {
+    unaryOp(x => Math.log(x))
+  }
+
+  const maybeConvertFromDegrees = (x: number) => {
+    if (degrees) {
+      return x / 180 * Math.PI
+    }
+    return x
+  }
+
+  const opSin = () => {
+    unaryOp(x => Math.sin(maybeConvertFromDegrees(x)))
+  }
+
+  const opCos = () => {
+    unaryOp(x => Math.cos(maybeConvertFromDegrees(x)))
+  }
+
+  const opTan = () => {
+    unaryOp(x => Math.tan(maybeConvertFromDegrees(x)))
+  }
+
+  const opSinh = () => {
+    unaryOp(x => Math.sinh(maybeConvertFromDegrees(x)))
+  }
+
+  const opCosh = () => {
+    unaryOp(x => Math.cosh(maybeConvertFromDegrees(x)))
+  }
+
+  const opTanh = () => {
+    unaryOp(x => Math.tanh(maybeConvertFromDegrees(x)))
+  }
+
+  const constPi = () => {
+    if (nextTypeWillPushBuffer) {
+      pushBuffer();
+    }
+    setBufferN(Math.PI)
+  }
+
   const formatNumber = (n: string | number) => {
     const parts = n.toString().split('.');
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    const maxOverallLength = 14
+    let maxOverallLength = 14
+    let e = ''
+    if (parts[1] && parts[1].includes('e')) {
+      const spl = parts[1].split('e')
+      maxOverallLength -= spl[1].length
+      e = 'e' + spl[1]
+    }
     if (parts[1] && parts[0].length + parts[1].length > maxOverallLength) {
-      parts[1] = Math.round(+parts[1].slice(0, maxOverallLength - parts[0].length + 1)/10).toString()
+      parts[1] = Math.round(+parts[1].slice(0, maxOverallLength - parts[0].length + 1)/10).toString() + e
     }
     return parts.join('.');
   };
@@ -370,49 +427,77 @@ const Calculator = () => {
       </div>
 
       <CalculatorContext.Provider value={{ typeDigit }}>
-        <CalculatorButton onClick={toggle2nd} className={altEnabled ? 'calculator-button-active' : ''}>2<sup>nd</sup></CalculatorButton>
-        <CalculatorButton onClick={opPercent}>%</CalculatorButton>
-        <CalculatorButton onClick={clearOrClearAll}>
-          {willClearAll ? 'C' : 'CE'}
-        </CalculatorButton>
-        <CalculatorButton onClick={backspace}>⌫</CalculatorButton>
+        <div className="calculator-extra-buttons">
+          <div></div>
+          <div></div>
+          <div></div>
 
-        <CalculatorButton onClick={opReciprocal}>⅟𝑥</CalculatorButton>
-        {altEnabled
-          ? <CalculatorButton onClick={opExponent} light>𝑥<sup>𝑦</sup></CalculatorButton>
-          : <CalculatorButton onClick={opSquare}>𝑥<sup>2</sup></CalculatorButton>
-        }
-        {altEnabled
-          ? <CalculatorButton onClick={opNRoot} light><sup>𝑦</sup>√𝑥</CalculatorButton>
-          : <CalculatorButton onClick={opSquareRoot}>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
-        }
-        <CalculatorButton onClick={opDivide}>÷</CalculatorButton>
+          <div></div>
+          <div></div>
+          <div></div>
 
-        <DigitButton digit={7} />
-        <DigitButton digit={8} />
-        <DigitButton digit={9} />
-        <CalculatorButton onClick={opMultiply}>×</CalculatorButton>
+          <div></div>
+          <CalculatorButton onClick={opLn}>ln</CalculatorButton>
+          <CalculatorButton onClick={opLog10}>log<sub>10</sub></CalculatorButton>
 
-        <DigitButton digit={4} />
-        <DigitButton digit={5} />
-        <DigitButton digit={6} />
-        <CalculatorButton onClick={opSubtract}>-</CalculatorButton>
+          <CalculatorButton onClick={toggleDegrees}>{degrees ? 'Deg' : 'Rad'}</CalculatorButton>
+          <CalculatorButton onClick={constPi}>	π</CalculatorButton>
+          <div></div>
 
-        <DigitButton digit={1} />
-        <DigitButton digit={2} />
-        <DigitButton digit={3} />
-        <CalculatorButton onClick={opAdd}>+</CalculatorButton>
+          <CalculatorButton onClick={opSin}>sin</CalculatorButton>
+          <CalculatorButton onClick={opCos}>cos</CalculatorButton>
+          <CalculatorButton onClick={opTan}>tan</CalculatorButton>
 
-        <CalculatorButton dark onClick={opInvertSign}>
-          ±
-        </CalculatorButton>
-        <DigitButton digit={0} />
-        <CalculatorButton dark onClick={typePeriod}>
-          .
-        </CalculatorButton>
-        <CalculatorButton light onClick={pushBuffer}>
-          ⎆
-        </CalculatorButton>
+          <CalculatorButton onClick={opSinh}>sinh</CalculatorButton>
+          <CalculatorButton onClick={opCosh}>cosh</CalculatorButton>
+          <CalculatorButton onClick={opTanh}>tanh</CalculatorButton>
+        </div>
+
+        <div className="calculator-buttons">
+          <CalculatorButton onClick={toggle2nd} className={altEnabled ? 'calculator-button-active' : ''}>2<sup>nd</sup></CalculatorButton>
+          <CalculatorButton onClick={opPercent}>%</CalculatorButton>
+          <CalculatorButton onClick={clearOrClearAll}>
+            {willClearAll ? 'C' : 'CE'}
+          </CalculatorButton>
+          <CalculatorButton onClick={backspace}>⌫</CalculatorButton>
+
+          <CalculatorButton onClick={opReciprocal}>⅟𝑥</CalculatorButton>
+          {altEnabled
+            ? <CalculatorButton onClick={opExponent} light>𝑥<sup>𝑦</sup></CalculatorButton>
+            : <CalculatorButton onClick={opSquare}>𝑥<sup>2</sup></CalculatorButton>
+          }
+          {altEnabled
+            ? <CalculatorButton onClick={opNRoot} light><sup>𝑦</sup>√𝑥</CalculatorButton>
+            : <CalculatorButton onClick={opSquareRoot}>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
+          }
+          <CalculatorButton onClick={opDivide}>÷</CalculatorButton>
+
+          <DigitButton digit={7} />
+          <DigitButton digit={8} />
+          <DigitButton digit={9} />
+          <CalculatorButton onClick={opMultiply}>×</CalculatorButton>
+
+          <DigitButton digit={4} />
+          <DigitButton digit={5} />
+          <DigitButton digit={6} />
+          <CalculatorButton onClick={opSubtract}>-</CalculatorButton>
+
+          <DigitButton digit={1} />
+          <DigitButton digit={2} />
+          <DigitButton digit={3} />
+          <CalculatorButton onClick={opAdd}>+</CalculatorButton>
+
+          <CalculatorButton dark onClick={opInvertSign}>
+            ±
+          </CalculatorButton>
+          <DigitButton digit={0} />
+          <CalculatorButton dark onClick={typePeriod}>
+            .
+          </CalculatorButton>
+          <CalculatorButton light onClick={pushBuffer}>
+            ⎆
+          </CalculatorButton>
+        </div>
       </CalculatorContext.Provider>
     </div>
   );

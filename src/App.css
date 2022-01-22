@@ -23,12 +23,14 @@ html, body, #root {
 }
 
 .calculator {
-  width: 100%;
-  height: calc(100% - env(safe-area-inset-bottom));
+  width: calc(100% - env(safe-area-inset-right) - env(safe-area-inset-left));
+  height: calc(100% - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+  margin-left: env(safe-area-inset-left);
+  margin-top: env(safe-area-inset-top);
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columnsc: 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  gap: 0px 0px;
+  gap: 0px 10px;
   grid-auto-flow: row;
   grid-template-areas:
     'calculator-top calculator-top calculator-top calculator-top'
@@ -63,7 +65,38 @@ html, body, #root {
 }
 
 .calculator-buttons {
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-area: calculator-buttons;
+  display: grid;
+  gap: 3px 3px;
+}
+
+.calculator-extra-buttons {
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-area: calculator-extra-buttons;
+  display: none;
+  gap: 3px 3px;
+}
+
+@media (orientation: landscape) {
+  .calculator {
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-areas:
+    'calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top'
+    'calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top'
+    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
+    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
+    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
+    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
+    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
+    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons';
+  }
+
+  .calculator-extra-buttons {
+    display: grid;
+  }
 }
 
 .calculator-button {
@@ -72,7 +105,6 @@ html, body, #root {
   color: white;
   border: none;
   background: #131313;
-  margin: 1px;
   align-items: center;
   justify-content: center;
   user-select: none;
@@ -93,7 +125,7 @@ html, body, #root {
   background: #5f6164;
 }
 
-sup {
+sup, sub {
   font-size: 70%;
 }
 
