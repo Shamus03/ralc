@@ -64,7 +64,7 @@ html, body, #root {
 }
 
 .calculator-button {
-  font-size: 1.5em;
+  font-size: 2em;
   background: #131313;
   margin: 1px;
   display: flex;
