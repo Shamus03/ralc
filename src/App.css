@@ -104,6 +104,11 @@ sup {
   left: 5px;
 }
 
+.text-decoration-overline {
+  text-decoration: overline;
+  text-decoration-thickness: from-font;
+}
+
 ::-webkit-scrollbar {
   width: 5px;
 }

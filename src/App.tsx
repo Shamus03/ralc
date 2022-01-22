@@ -361,7 +361,7 @@ const Calculator = () => {
         }
         {altEnabled
           ? <CalculatorButton onClick={opNRoot} light><sup>𝑦</sup>√𝑥</CalculatorButton>
-          : <CalculatorButton onClick={opSquareRoot}>√𝑥</CalculatorButton>
+          : <CalculatorButton onClick={opSquareRoot}>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
         }
         <CalculatorButton onClick={opDivide}>÷</CalculatorButton>
 
