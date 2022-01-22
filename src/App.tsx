@@ -207,9 +207,10 @@ const Calculator = () => {
   useHotkey('NumpadDecimal', typePeriod);
 
   const backspace = () => {
-    setBuffer(buffer.slice(0, -1));
-    if (buffer === '') {
+    if (buffer.length === 1) {
       setBuffer('0');
+    } else {
+      setBuffer(buffer.slice(0, -1));
     }
   };
   useHotkey('Backspace', backspace);
