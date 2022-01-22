@@ -212,6 +212,8 @@ const Calculator = () => {
     } else {
       setBuffer(buffer.slice(0, -1));
     }
+    setNextTypeWillClearBuffer(false);
+    setNextTypeWillPushBuffer(false);
   };
   useHotkey('Backspace', backspace);
 
