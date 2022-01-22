@@ -13,20 +13,31 @@ const CalculatorButton = ({
   onClick: () => void;
 }) => {
   return (
-    <div
-      className={`calculator-button ${dark ? 'calculator-button-dark' : ''} ${
-        light ? 'calculator-button-light' : ''
-      }`}
-      role="none"
-      onClick={onClick}
+    <button
+      type="button"
+      className={`calculator-button ${dark ? 'calculator-button-dark' : ''} ${light ? 'calculator-button-light' : ''
+        }`}
+      onClick={(e) => {
+        onClick()
+        e.currentTarget.blur()
+      }}
     >
       {children}
-    </div>
+    </button>
   );
 };
 CalculatorButton.defaultProps = {
   dark: false,
   light: false,
+};
+
+
+const DigitButton = ({ digit, typeDigit }: { digit: number, typeDigit: (v: number) => void }) => {
+  return (
+    <CalculatorButton dark onClick={() => typeDigit(digit)}>
+      {digit.toString()}
+    </CalculatorButton>
+  );
 };
 
 function useEventListener<K extends keyof WindowEventMap>(
@@ -279,14 +290,6 @@ const Calculator = () => {
     return parts.join('.');
   };
 
-  const DigitButton = ({ digit }: { digit: number }) => {
-    return (
-      <CalculatorButton dark onClick={() => typeDigit(digit)}>
-        {digit.toString()}
-      </CalculatorButton>
-    );
-  };
-
   let nextStackId = 0;
 
   return (
@@ -310,25 +313,25 @@ const Calculator = () => {
       <CalculatorButton onClick={opSquareRoot}>√𝑥</CalculatorButton>
       <CalculatorButton onClick={opDivide}>÷</CalculatorButton>
 
-      <DigitButton digit={7} />
-      <DigitButton digit={8} />
-      <DigitButton digit={9} />
+      <DigitButton digit={7} typeDigit={typeDigit} />
+      <DigitButton digit={8} typeDigit={typeDigit} />
+      <DigitButton digit={9} typeDigit={typeDigit} />
       <CalculatorButton onClick={opMultiply}>×</CalculatorButton>
 
-      <DigitButton digit={4} />
-      <DigitButton digit={5} />
-      <DigitButton digit={6} />
+      <DigitButton digit={4} typeDigit={typeDigit} />
+      <DigitButton digit={5} typeDigit={typeDigit} />
+      <DigitButton digit={6} typeDigit={typeDigit} />
       <CalculatorButton onClick={opSubtract}>-</CalculatorButton>
 
-      <DigitButton digit={1} />
-      <DigitButton digit={2} />
-      <DigitButton digit={3} />
+      <DigitButton digit={1} typeDigit={typeDigit} />
+      <DigitButton digit={2} typeDigit={typeDigit} />
+      <DigitButton digit={3} typeDigit={typeDigit} />
       <CalculatorButton onClick={opAdd}>+</CalculatorButton>
 
       <CalculatorButton dark onClick={opInvertSign}>
         ±
       </CalculatorButton>
-      <DigitButton digit={0} />
+      <DigitButton digit={0} typeDigit={typeDigit} />
       <CalculatorButton dark onClick={typePeriod}>
         .
       </CalculatorButton>
