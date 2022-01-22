@@ -72,6 +72,29 @@ function useEventListener<K extends keyof WindowEventMap>(
   }, [eventName]);
 }
 
+function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.log(error);
+      return initialValue;
+    }
+  });
+  const setValue = (value: T) => {
+    try {
+      const valueToStore =
+        value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  return [storedValue, setValue];
+}
+
 const useHotkey = (
   key: string | number,
   callback: (e: KeyboardEvent) => void
@@ -122,9 +145,9 @@ const useIpcEvent = (eventName: string, callback: () => void) => {
 
 const Calculator = () => {
   const stackDiv = useRef<HTMLDivElement>(null);
-  const [nextTypeWillClearBuffer, setNextTypeWillClearBuffer] = useState(false);
-  const [nextTypeWillPushBuffer, setNextTypeWillPushBuffer] = useState(false);
-  const [stack, setStack] = useState<number[]>([]);
+  const [nextTypeWillClearBuffer, setNextTypeWillClearBuffer] = useLocalStorage('calculator-next-type-will-clear-buffer', false);
+  const [nextTypeWillPushBuffer, setNextTypeWillPushBuffer] = useLocalStorage('calculator-next-type-will-push-buffer', false);
+  const [stack, setStack] = useLocalStorage<number[]>('calculator-stack', []);
   const pushStack = (v: number) => {
     setNextTypeWillClearBuffer(true);
     setStack([...stack, v]);
@@ -133,7 +156,7 @@ const Calculator = () => {
     });
   };
 
-  const [buffer, setBuffer] = useState('0');
+  const [buffer, setBuffer] = useLocalStorage('calculator-buffer', '0');
   const setBufferN = (v: number) => setBuffer(v.toString());
 
   const pushBuffer = () => {
@@ -241,7 +264,7 @@ const Calculator = () => {
     }
   }
 
-  const [altEnabled, setAltEnabled] = useState(false)
+  const [altEnabled, setAltEnabled] = useLocalStorage('calculator-alt-enabled', false)
   const toggle2nd = () => {
     setAltEnabled(!altEnabled)
   }
