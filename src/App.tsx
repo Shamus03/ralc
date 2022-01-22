@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { createContext, useEffect, useRef, useState } from 'react';
 import './App.css';
 
 const CalculatorButton = ({
@@ -31,12 +31,19 @@ CalculatorButton.defaultProps = {
   light: false,
 };
 
+const CalculatorContext = createContext({
+  typeDigit: (digit: number) => { }
+})
 
-const DigitButton = ({ digit, typeDigit }: { digit: number, typeDigit: (v: number) => void }) => {
+const DigitButton = ({ digit }: { digit: number }) => {
   return (
-    <CalculatorButton dark onClick={() => typeDigit(digit)}>
-      {digit.toString()}
-    </CalculatorButton>
+    <CalculatorContext.Consumer>
+      {({ typeDigit }) => (
+        <CalculatorButton dark onClick={() => typeDigit(digit)}>
+          {digit.toString()}
+        </CalculatorButton>
+      )}
+    </CalculatorContext.Consumer>
   );
 };
 
@@ -303,41 +310,43 @@ const Calculator = () => {
         <div className="calculator-buffer">{formatNumber(buffer)}</div>
       </div>
 
-      <CalculatorButton onClick={opPercent}>%</CalculatorButton>
-      <CalculatorButton onClick={clearBuffer}>CE</CalculatorButton>
-      <CalculatorButton onClick={clearAll}>C</CalculatorButton>
-      <CalculatorButton onClick={backspace}>⌫</CalculatorButton>
+      <CalculatorContext.Provider value={{ typeDigit }}>
+        <CalculatorButton onClick={opPercent}>%</CalculatorButton>
+        <CalculatorButton onClick={clearBuffer}>CE</CalculatorButton>
+        <CalculatorButton onClick={clearAll}>C</CalculatorButton>
+        <CalculatorButton onClick={backspace}>⌫</CalculatorButton>
 
-      <CalculatorButton onClick={opReciprocal}>⅟𝑥</CalculatorButton>
-      <CalculatorButton onClick={opSquare}>𝑥²</CalculatorButton>
-      <CalculatorButton onClick={opSquareRoot}>√𝑥</CalculatorButton>
-      <CalculatorButton onClick={opDivide}>÷</CalculatorButton>
+        <CalculatorButton onClick={opReciprocal}>⅟𝑥</CalculatorButton>
+        <CalculatorButton onClick={opSquare}>𝑥²</CalculatorButton>
+        <CalculatorButton onClick={opSquareRoot}>√𝑥</CalculatorButton>
+        <CalculatorButton onClick={opDivide}>÷</CalculatorButton>
 
-      <DigitButton digit={7} typeDigit={typeDigit} />
-      <DigitButton digit={8} typeDigit={typeDigit} />
-      <DigitButton digit={9} typeDigit={typeDigit} />
-      <CalculatorButton onClick={opMultiply}>×</CalculatorButton>
+        <DigitButton digit={7} />
+        <DigitButton digit={8} />
+        <DigitButton digit={9} />
+        <CalculatorButton onClick={opMultiply}>×</CalculatorButton>
 
-      <DigitButton digit={4} typeDigit={typeDigit} />
-      <DigitButton digit={5} typeDigit={typeDigit} />
-      <DigitButton digit={6} typeDigit={typeDigit} />
-      <CalculatorButton onClick={opSubtract}>-</CalculatorButton>
+        <DigitButton digit={4} />
+        <DigitButton digit={5} />
+        <DigitButton digit={6} />
+        <CalculatorButton onClick={opSubtract}>-</CalculatorButton>
 
-      <DigitButton digit={1} typeDigit={typeDigit} />
-      <DigitButton digit={2} typeDigit={typeDigit} />
-      <DigitButton digit={3} typeDigit={typeDigit} />
-      <CalculatorButton onClick={opAdd}>+</CalculatorButton>
+        <DigitButton digit={1} />
+        <DigitButton digit={2} />
+        <DigitButton digit={3} />
+        <CalculatorButton onClick={opAdd}>+</CalculatorButton>
 
-      <CalculatorButton dark onClick={opInvertSign}>
-        ±
-      </CalculatorButton>
-      <DigitButton digit={0} typeDigit={typeDigit} />
-      <CalculatorButton dark onClick={typePeriod}>
-        .
-      </CalculatorButton>
-      <CalculatorButton light onClick={pushBuffer}>
-        ⎆
-      </CalculatorButton>
+        <CalculatorButton dark onClick={opInvertSign}>
+          ±
+        </CalculatorButton>
+        <DigitButton digit={0} />
+        <CalculatorButton dark onClick={typePeriod}>
+          .
+        </CalculatorButton>
+        <CalculatorButton light onClick={pushBuffer}>
+          ⎆
+        </CalculatorButton>
+      </CalculatorContext.Provider>
     </div>
   );
 };
