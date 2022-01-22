@@ -3,7 +3,7 @@ body {
   position: relative;
   color: white;
   background: #1f1f1f;
-  font-family: sans-serif;
+  font-family: monospace;
   overflow-y: hidden;
   display: flex;
   justify-content: center;

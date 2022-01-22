@@ -269,9 +269,13 @@ const Calculator = () => {
   };
   useHotkey('shift+Minus', opInvertSign);
 
-  const formatBuffer = () => {
-    const parts = buffer.toString().split('.');
+  const formatNumber = (n: string | number) => {
+    const parts = n.toString().split('.');
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    const maxOverallLength = 15
+    if (parts[1] && parts[0].length + parts[1].length > maxOverallLength) {
+      parts[1] = Math.round(+parts[1].slice(0, maxOverallLength - parts[0].length)/10) + '…'
+    }
     return parts.join('.');
   };
 
@@ -290,10 +294,10 @@ const Calculator = () => {
       <div className="calculator-top">
         <div className="calculator-stack" ref={stackDiv}>
           {stack.map((s) => (
-            <div key={nextStackId++}>{s.toLocaleString()}</div>
+            <div key={nextStackId++}>{formatNumber(s)}</div>
           ))}
         </div>
-        <div className="calculator-buffer">{formatBuffer()}</div>
+        <div className="calculator-buffer">{formatNumber(buffer)}</div>
       </div>
 
       <CalculatorButton onClick={opPercent}>%</CalculatorButton>
