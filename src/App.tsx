@@ -1,4 +1,4 @@
-import { createContext, ReactFragment, useEffect, useRef, useState } from 'react';
+import { createContext, Fragment, ReactFragment, useEffect, useRef, useState } from 'react';
 import './App.css';
 
 const CalculatorButton = ({
@@ -362,29 +362,34 @@ const Calculator = () => {
     return x
   }
 
-  const opSin = () => {
-    unaryOp(x => Math.sin(maybeConvertFromDegrees(x)))
+  const maybeConvertToDegrees = (x: number) => {
+    if (degrees) {
+      return x / Math.PI * 180
+    }
+    return x
   }
 
-  const opCos = () => {
-    unaryOp(x => Math.cos(maybeConvertFromDegrees(x)))
+  const makeTrigFunc = (fn: (v: number) => number) => () => {
+    unaryOp(x => fn(maybeConvertFromDegrees(x)))
   }
 
-  const opTan = () => {
-    unaryOp(x => Math.tan(maybeConvertFromDegrees(x)))
+  const opSin = makeTrigFunc(Math.sin)
+  const opCos =  makeTrigFunc(Math.cos)
+  const opTan = makeTrigFunc(Math.tan)
+  const opSinh = makeTrigFunc(Math.sinh)
+  const opCosh =  makeTrigFunc(Math.cosh)
+  const opTanh = makeTrigFunc(Math.tanh)
+
+  const makeInverseTrigFunc = (fn: (v: number) => number) => () => {
+    unaryOp(x => maybeConvertToDegrees(fn(x)))
   }
 
-  const opSinh = () => {
-    unaryOp(x => Math.sinh(maybeConvertFromDegrees(x)))
-  }
-
-  const opCosh = () => {
-    unaryOp(x => Math.cosh(maybeConvertFromDegrees(x)))
-  }
-
-  const opTanh = () => {
-    unaryOp(x => Math.tanh(maybeConvertFromDegrees(x)))
-  }
+  const opAsin = makeInverseTrigFunc(Math.asin)
+  const opAcos =  makeInverseTrigFunc(Math.acos)
+  const opAtan = makeInverseTrigFunc(Math.atan)
+  const opAsinh = makeInverseTrigFunc(Math.asinh)
+  const opAcosh =  makeInverseTrigFunc(Math.acosh)
+  const opAtanh = makeInverseTrigFunc(Math.atanh)
 
   const constPi = () => {
     if (nextTypeWillPushBuffer) {
@@ -444,13 +449,26 @@ const Calculator = () => {
           <CalculatorButton onClick={constPi}>	π</CalculatorButton>
           <div></div>
 
-          <CalculatorButton onClick={opSin}>sin</CalculatorButton>
-          <CalculatorButton onClick={opCos}>cos</CalculatorButton>
-          <CalculatorButton onClick={opTan}>tan</CalculatorButton>
+          {altEnabled
+            ? <Fragment>
+              <CalculatorButton onClick={opAsin}>sin<sup>-1</sup></CalculatorButton>
+              <CalculatorButton onClick={opAcos}>cos<sup>-1</sup></CalculatorButton>
+              <CalculatorButton onClick={opAtan}>tan<sup>-1</sup></CalculatorButton>
 
-          <CalculatorButton onClick={opSinh}>sinh</CalculatorButton>
-          <CalculatorButton onClick={opCosh}>cosh</CalculatorButton>
-          <CalculatorButton onClick={opTanh}>tanh</CalculatorButton>
+              <CalculatorButton onClick={opAsinh}>sinh<sup>-1</sup></CalculatorButton>
+              <CalculatorButton onClick={opAcosh}>cosh<sup>-1</sup></CalculatorButton>
+              <CalculatorButton onClick={opAtanh}>tanh<sup>-1</sup></CalculatorButton>
+            </Fragment>
+            : <Fragment>
+              <CalculatorButton onClick={opSin}>sin</CalculatorButton>
+              <CalculatorButton onClick={opCos}>cos</CalculatorButton>
+              <CalculatorButton onClick={opTan}>tan</CalculatorButton>
+
+              <CalculatorButton onClick={opSinh}>sinh</CalculatorButton>
+              <CalculatorButton onClick={opCosh}>cosh</CalculatorButton>
+              <CalculatorButton onClick={opTanh}>tanh</CalculatorButton>
+            </Fragment>}
+
         </div>
 
         <div className="calculator-buttons">
