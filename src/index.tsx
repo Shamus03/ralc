@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
+import scrollLock from './scroll-lock';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -18,6 +19,4 @@ serviceWorkerRegistration.register();
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 
-document.addEventListener('touchstart', e => {
-  e.preventDefault();
-})
+scrollLock.enable()
