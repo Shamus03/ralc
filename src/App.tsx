@@ -451,13 +451,13 @@ const Calculator = () => {
 
           {altEnabled
             ? <Fragment>
-              <CalculatorButton onClick={opAsin}>sin<sup>-1</sup></CalculatorButton>
-              <CalculatorButton onClick={opAcos}>cos<sup>-1</sup></CalculatorButton>
-              <CalculatorButton onClick={opAtan}>tan<sup>-1</sup></CalculatorButton>
+              <CalculatorButton onClick={opAsin} light>sin<sup>-1</sup></CalculatorButton>
+              <CalculatorButton onClick={opAcos} light>cos<sup>-1</sup></CalculatorButton>
+              <CalculatorButton onClick={opAtan} light>tan<sup>-1</sup></CalculatorButton>
 
-              <CalculatorButton onClick={opAsinh}>sinh<sup>-1</sup></CalculatorButton>
-              <CalculatorButton onClick={opAcosh}>cosh<sup>-1</sup></CalculatorButton>
-              <CalculatorButton onClick={opAtanh}>tanh<sup>-1</sup></CalculatorButton>
+              <CalculatorButton onClick={opAsinh} light>sinh<sup>-1</sup></CalculatorButton>
+              <CalculatorButton onClick={opAcosh} light>cosh<sup>-1</sup></CalculatorButton>
+              <CalculatorButton onClick={opAtanh} light>tanh<sup>-1</sup></CalculatorButton>
             </Fragment>
             : <Fragment>
               <CalculatorButton onClick={opSin}>sin</CalculatorButton>
