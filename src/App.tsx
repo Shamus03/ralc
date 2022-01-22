@@ -324,7 +324,7 @@ const Calculator = () => {
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     const maxOverallLength = 14
     if (parts[1] && parts[0].length + parts[1].length > maxOverallLength) {
-      parts[1] = Math.round(+parts[1].slice(0, maxOverallLength - parts[0].length)/10) + '…'
+      parts[1] = Math.round(+parts[1].slice(0, maxOverallLength - parts[0].length + 1)/10).toString()
     }
     return parts.join('.');
   };
