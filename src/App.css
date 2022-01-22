@@ -69,7 +69,6 @@ html, body, #root {
   grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-area: calculator-buttons;
   display: grid;
-  gap: 3px 3px;
 }
 
 .calculator-extra-buttons {
@@ -77,7 +76,6 @@ html, body, #root {
   grid-template-columns: 1fr 1fr 1fr;
   grid-area: calculator-extra-buttons;
   display: none;
-  gap: 3px 3px;
 }
 
 @media (orientation: landscape) {
@@ -101,6 +99,7 @@ html, body, #root {
 
 .calculator-button {
   padding: 0;
+  margin: 1px;
   font-size: 2em;
   color: white;
   border: none;
@@ -132,6 +131,7 @@ sup, sub {
 .version {
   position: fixed;
   color: #5f6164;
+  padding-left: env(safe-area-inset-left);
   top: 5px;
   left: 5px;
 }
