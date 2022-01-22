@@ -91,7 +91,7 @@ html, body, #root {
 }
 
 .version {
-  position: absolute;
+  position: fixed;
   color: #5f6164;
   top: 5px;
   left: 5px;
