@@ -89,7 +89,7 @@ html, body, #root {
   background: #4b4b4b;
 }
 
-.calculator-button:active {
+.calculator-button:active, .calculator-button-active {
   background: #5f6164;
 }
 

@@ -5,17 +5,19 @@ const CalculatorButton = ({
   children,
   dark,
   light,
+  className,
   onClick,
 }: {
   children: ReactFragment;
   dark?: boolean;
   light?: boolean;
+  className?: string,
   onClick: () => void;
 }) => {
   return (
     <button
       type="button"
-      className={`calculator-button ${dark ? 'calculator-button-dark' : ''} ${light ? 'calculator-button-light' : ''}`}
+      className={`calculator-button ${dark ? 'calculator-button-dark' : ''} ${light ? 'calculator-button-light' : ''} ${className}`}
       onClick={(e) => {
         onClick()
         e.currentTarget.blur()
@@ -28,6 +30,7 @@ const CalculatorButton = ({
 CalculatorButton.defaultProps = {
   dark: false,
   light: false,
+  className: '',
 };
 
 const CalculatorContext = createContext({
@@ -180,6 +183,7 @@ const Calculator = () => {
     }
     setNextTypeWillClearBuffer(false);
     setNextTypeWillPushBuffer(false);
+    setAltEnabled(false)
   };
 
   const typeDigit = (d: number) => {
@@ -220,12 +224,29 @@ const Calculator = () => {
   const clearAll = () => {
     clearBuffer();
     setStack([]);
+    setAltEnabled(false)
   };
   useHotkey('ctrl+Backspace', clearAll);
+
+  const willClearAll = !nextTypeWillClearBuffer && buffer === '0'
+
+  const clearOrClearAll = () => {
+    if (willClearAll) {
+      clearAll()
+    } else {
+      clearBuffer()
+    }
+  }
+
+  const [altEnabled, setAltEnabled] = useState(false)
+  const toggle2nd = () => {
+    setAltEnabled(!altEnabled)
+  }
 
   const unaryOp = (fn: (x: number) => number) => {
     setBufferN(fn(+buffer));
     setNextTypeWillPushBuffer(true);
+    setAltEnabled(false)
   };
 
   const binaryOp = (fn: (a: number, b: number) => number) => {
@@ -235,6 +256,7 @@ const Calculator = () => {
     const b = +buffer;
     setBufferN(fn(a, b));
     setNextTypeWillPushBuffer(true);
+    setAltEnabled(false)
   };
 
   const opPercent = () => {
@@ -247,15 +269,23 @@ const Calculator = () => {
   };
   useHotkey('shift+Digit4', opReciprocal);
 
+  const opSquare = () => {
+    unaryOp(x => x * x)
+  };
+  useHotkey('shift+Digit6', opSquare);
+
   const opExponent = () => {
     binaryOp((a, b) => Math.pow(a, b));
   };
-  useHotkey('shift+Digit6', opExponent);
 
   const opSquareRoot = () => {
     unaryOp((x) => Math.sqrt(x));
   };
   useHotkey('shift+ctrl+Digit6', opSquareRoot);
+
+  const opNRoot = () => {
+    binaryOp((a, b) => Math.pow(a, 1/b))
+  };
 
   const opDivide = () => {
     binaryOp((a, b) => a / b);
@@ -314,14 +344,22 @@ const Calculator = () => {
       </div>
 
       <CalculatorContext.Provider value={{ typeDigit }}>
+        <CalculatorButton onClick={toggle2nd} className={altEnabled ? 'calculator-button-active' : ''}>2<sup>nd</sup></CalculatorButton>
         <CalculatorButton onClick={opPercent}>%</CalculatorButton>
-        <CalculatorButton onClick={clearBuffer}>CE</CalculatorButton>
-        <CalculatorButton onClick={clearAll}>C</CalculatorButton>
+        <CalculatorButton onClick={clearOrClearAll}>
+          {willClearAll ? 'C' : 'CE'}
+        </CalculatorButton>
         <CalculatorButton onClick={backspace}>⌫</CalculatorButton>
 
         <CalculatorButton onClick={opReciprocal}>⅟𝑥</CalculatorButton>
-        <CalculatorButton onClick={opExponent}>𝑥<sup>𝑦</sup></CalculatorButton>
-        <CalculatorButton onClick={opSquareRoot}>√𝑥</CalculatorButton>
+        {altEnabled
+          ? <CalculatorButton onClick={opExponent} light>𝑥<sup>𝑦</sup></CalculatorButton>
+          : <CalculatorButton onClick={opSquare}>𝑥<sup>2</sup></CalculatorButton>
+        }
+        {altEnabled
+          ? <CalculatorButton onClick={opNRoot} light><sup>𝑦</sup>√𝑥</CalculatorButton>
+          : <CalculatorButton onClick={opSquareRoot}>√𝑥</CalculatorButton>
+        }
         <CalculatorButton onClick={opDivide}>÷</CalculatorButton>
 
         <DigitButton digit={7} />
