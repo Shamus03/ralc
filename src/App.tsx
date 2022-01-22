@@ -15,8 +15,7 @@ const CalculatorButton = ({
   return (
     <button
       type="button"
-      className={`calculator-button ${dark ? 'calculator-button-dark' : ''} ${light ? 'calculator-button-light' : ''
-        }`}
+      className={`calculator-button ${dark ? 'calculator-button-dark' : ''} ${light ? 'calculator-button-light' : ''}`}
       onClick={(e) => {
         onClick()
         e.currentTarget.blur()
