@@ -1,4 +1,4 @@
-import { createContext, useEffect, useRef, useState } from 'react';
+import { createContext, ReactFragment, useEffect, useRef, useState } from 'react';
 import './App.css';
 
 const CalculatorButton = ({
@@ -7,7 +7,7 @@ const CalculatorButton = ({
   light,
   onClick,
 }: {
-  children: string;
+  children: ReactFragment;
   dark?: boolean;
   light?: boolean;
   onClick: () => void;
@@ -247,10 +247,10 @@ const Calculator = () => {
   };
   useHotkey('shift+Digit4', opReciprocal);
 
-  const opSquare = () => {
-    unaryOp((x) => x * x);
+  const opExponent = () => {
+    binaryOp((a, b) => Math.pow(a, b));
   };
-  useHotkey('shift+Digit6', opSquare);
+  useHotkey('shift+Digit6', opExponent);
 
   const opSquareRoot = () => {
     unaryOp((x) => Math.sqrt(x));
@@ -289,7 +289,7 @@ const Calculator = () => {
   const formatNumber = (n: string | number) => {
     const parts = n.toString().split('.');
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    const maxOverallLength = 15
+    const maxOverallLength = 14
     if (parts[1] && parts[0].length + parts[1].length > maxOverallLength) {
       parts[1] = Math.round(+parts[1].slice(0, maxOverallLength - parts[0].length)/10) + '…'
     }
@@ -320,7 +320,7 @@ const Calculator = () => {
         <CalculatorButton onClick={backspace}>⌫</CalculatorButton>
 
         <CalculatorButton onClick={opReciprocal}>⅟𝑥</CalculatorButton>
-        <CalculatorButton onClick={opSquare}>𝑥²</CalculatorButton>
+        <CalculatorButton onClick={opExponent}>𝑥<sup>𝑦</sup></CalculatorButton>
         <CalculatorButton onClick={opSquareRoot}>√𝑥</CalculatorButton>
         <CalculatorButton onClick={opDivide}>÷</CalculatorButton>
 

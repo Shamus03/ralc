@@ -3,11 +3,14 @@ body {
   position: relative;
   color: white;
   background: #1f1f1f;
-  font-family: monospace;
   overflow-y: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+body {
+  font-family: monospace;
 }
 
 html {
@@ -70,7 +73,6 @@ html, body, #root {
   border: none;
   background: #131313;
   margin: 1px;
-  display: flex;
   align-items: center;
   justify-content: center;
   user-select: none;
@@ -89,6 +91,10 @@ html, body, #root {
 
 .calculator-button:active {
   background: #5f6164;
+}
+
+sup {
+  font-size: 70%;
 }
 
 .version {
