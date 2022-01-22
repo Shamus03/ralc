@@ -90,6 +90,13 @@ html, body, #root {
   background: #5f6164;
 }
 
+.version {
+  position: absolute;
+  color: #5f6164;
+  top: 5px;
+  left: 5px;
+}
+
 ::-webkit-scrollbar {
   width: 5px;
 }

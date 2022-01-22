@@ -13,6 +13,7 @@ jobs:
       - name: Install and Build 🔧
         run: |
           npm ci
+          export REACT_APP_VERSION=${{ github.run_number }}
           npm run build
 
       - name: Deploy 🚀

@@ -11,6 +11,7 @@ charset = utf-8
 trim_trailing_whitespace = false
 insert_final_newline = false
 
-[*.{tsx,ts}]
+[*.{tsx,ts,css}]
 indent_size = 2
 insert_final_newline = true
+trim_trailing_whitespace = true

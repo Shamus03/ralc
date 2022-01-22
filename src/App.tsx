@@ -300,6 +300,10 @@ const Calculator = () => {
 
   return (
     <div className="calculator">
+      <div className="version">
+        v{process.env.REACT_APP_VERSION}
+      </div>
+
       <div className="calculator-top">
         <div className="calculator-stack" ref={stackDiv}>
           {stack.map((s) => (
