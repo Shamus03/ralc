@@ -12,7 +12,18 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-serviceWorkerRegistration.register();
+serviceWorkerRegistration.register({
+  onUpdate: reg => {
+    if (reg.waiting) {
+      reg.waiting.addEventListener('statechange', e => {
+        if (e.target instanceof ServiceWorker && e.target.state === 'activated') {
+          window.location.reload()
+        }
+      })
+      reg.waiting.postMessage({ type: 'SKIP_WAITING' })
+    }
+  }
+});
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
