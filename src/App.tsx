@@ -244,13 +244,13 @@ const Calculator = () => {
     setAltEnabled(!altEnabled)
   }
 
-  const unaryOp = (fn: (x: number) => number) => {
+  const unaryOp = (fn: (x: number) => number) => () => {
     setBufferN(fn(+buffer));
     setNextTypeWillPushBuffer(true);
     setAltEnabled(false)
   };
 
-  const binaryOp = (fn: (a: number, b: number) => number) => {
+  const binaryOp = (fn: (a: number, b: number) => number) => () => {
     if (!stack.length) return;
     const a = stack.slice(-1)[0];
     setStack(stack.slice(0, -1));
@@ -260,61 +260,39 @@ const Calculator = () => {
     setAltEnabled(false)
   };
 
-  const opPercent = () => {
-    unaryOp((x) => x / 100);
-  };
+  const opPercent = unaryOp((x) => x / 100);
   useHotkey('shift+Digit5', opPercent);
 
-  const opReciprocal = () => {
-    unaryOp((x) => 1 / x);
-  };
+  const opReciprocal = unaryOp((x) => 1 / x);
   useHotkey('shift+Digit4', opReciprocal);
 
-  const opSquare = () => {
-    unaryOp(x => x * x)
-  };
+  const opSquare = unaryOp(x => x * x)
   useHotkey('shift+Digit6', opSquare);
 
-  const opExponent = () => {
-    binaryOp((a, b) => Math.pow(a, b));
-  };
+  const opExponent = binaryOp((a, b) => Math.pow(a, b));
 
-  const opSquareRoot = () => {
-    unaryOp((x) => Math.sqrt(x));
-  };
+  const opSquareRoot = unaryOp((x) => Math.sqrt(x));
   useHotkey('shift+ctrl+Digit6', opSquareRoot);
 
-  const opNRoot = () => {
-    binaryOp((a, b) => Math.pow(a, 1/b))
-  };
+  const opNRoot = binaryOp((a, b) => Math.pow(a, 1/b))
 
-  const opDivide = () => {
-    binaryOp((a, b) => a / b);
-  };
+  const opDivide = binaryOp((a, b) => a / b);
   useHotkey('NumpadDivide', opDivide);
   useHotkey('Slash', opDivide);
 
-  const opMultiply = () => {
-    binaryOp((a, b) => a * b);
-  };
+  const opMultiply = binaryOp((a, b) => a * b);
   useHotkey('NumpadMultiply', opMultiply);
   useHotkey('shift+Digit8', opMultiply);
 
-  const opSubtract = () => {
-    binaryOp((a, b) => a - b);
-  };
+  const opSubtract = binaryOp((a, b) => a - b);
   useHotkey('NumpadSubtract', opSubtract);
   useHotkey('Minus', opSubtract);
 
-  const opAdd = () => {
-    binaryOp((a, b) => a + b);
-  };
+  const opAdd = binaryOp((a, b) => a + b);
   useHotkey('NumpadAdd', opAdd);
   useHotkey('shift+Equal', opAdd);
 
-  const opInvertSign = () => {
-    unaryOp((x) => -x);
-  };
+  const opInvertSign = unaryOp((x) => -x);
   useHotkey('shift+Minus', opInvertSign);
 
   const [degrees, setDegrees] = useLocalStorage('calculator-degrees', false)
@@ -322,21 +300,11 @@ const Calculator = () => {
     setDegrees(!degrees)
   }
 
-  const opFloor = () => {
-    unaryOp(x => Math.floor(x))
-  }
+  const opFloor = unaryOp(x => Math.floor(x))
+  const opCeiling = unaryOp(x => Math.ceil(x))
 
-  const opCeiling = () => {
-    unaryOp(x => Math.ceil(x))
-  }
-
-  const opLog10 = () => {
-    unaryOp(x => Math.log10(x))
-  }
-
-  const opLn = () => {
-    unaryOp(x => Math.log(x))
-  }
+  const opLog10 = unaryOp(x => Math.log10(x))
+  const opLn = unaryOp(x => Math.log(x))
 
   const maybeConvertFromDegrees = (x: number) => {
     if (degrees) {
@@ -352,34 +320,34 @@ const Calculator = () => {
     return x
   }
 
-  const makeTrigFunc = (fn: (v: number) => number) => () => {
-    unaryOp(x => fn(maybeConvertFromDegrees(x)))
-  }
+  const makeTrigFunc = (fn: (v: number) => number) => unaryOp(x => fn(maybeConvertFromDegrees(x)))
 
   const opSin = makeTrigFunc(Math.sin)
-  const opCos =  makeTrigFunc(Math.cos)
+  const opCos = makeTrigFunc(Math.cos)
   const opTan = makeTrigFunc(Math.tan)
   const opSinh = makeTrigFunc(Math.sinh)
-  const opCosh =  makeTrigFunc(Math.cosh)
+  const opCosh = makeTrigFunc(Math.cosh)
   const opTanh = makeTrigFunc(Math.tanh)
 
-  const makeInverseTrigFunc = (fn: (v: number) => number) => () => {
-    unaryOp(x => maybeConvertToDegrees(fn(x)))
-  }
+  const makeInverseTrigFunc = (fn: (v: number) => number) => unaryOp(x => maybeConvertToDegrees(fn(x)))
 
   const opAsin = makeInverseTrigFunc(Math.asin)
-  const opAcos =  makeInverseTrigFunc(Math.acos)
+  const opAcos = makeInverseTrigFunc(Math.acos)
   const opAtan = makeInverseTrigFunc(Math.atan)
   const opAsinh = makeInverseTrigFunc(Math.asinh)
-  const opAcosh =  makeInverseTrigFunc(Math.acosh)
+  const opAcosh = makeInverseTrigFunc(Math.acosh)
   const opAtanh = makeInverseTrigFunc(Math.atanh)
 
-  const constPi = () => {
+  const makeConst = (v: number) => () => {
     if (nextTypeWillPushBuffer) {
       pushBuffer();
     }
-    setBufferN(Math.PI)
+    setBufferN(v)
+    setNextTypeWillClearBuffer(false);
+    setNextTypeWillPushBuffer(true);
   }
+
+  const constPi = makeConst(Math.PI)
 
   const formatNumber = (n: string | number) => {
     const parts = n.toString().split('.');
