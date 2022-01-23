@@ -322,6 +322,14 @@ const Calculator = () => {
     setDegrees(!degrees)
   }
 
+  const opFloor = () => {
+    unaryOp(x => Math.floor(x))
+  }
+
+  const opCeiling = () => {
+    unaryOp(x => Math.ceil(x))
+  }
+
   const opLog10 = () => {
     unaryOp(x => Math.log10(x))
   }
@@ -413,8 +421,8 @@ const Calculator = () => {
           <div></div>
 
           <div></div>
-          <div></div>
-          <div></div>
+          <CalculatorButton onClick={opFloor}>&lfloor;𝑥&rfloor;</CalculatorButton>
+          <CalculatorButton onClick={opCeiling}>&lceil;𝑥&rceil;</CalculatorButton>
 
           <div></div>
           <CalculatorButton onClick={opLn}>ln</CalculatorButton>
