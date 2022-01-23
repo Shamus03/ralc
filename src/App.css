@@ -77,6 +77,21 @@ html, body, #root {
     'calculator-buttons calculator-buttons calculator-buttons calculator-buttons';
 }
 
+@media (orientation: landscape) {
+  .calculator {
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-areas:
+    'calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top'
+    'calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top'
+    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
+    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
+    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
+    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
+    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
+    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons';
+  }
+}
+
 .calculator-top {
   grid-area: calculator-top;
   text-align: right;
@@ -113,19 +128,6 @@ html, body, #root {
 }
 
 @media (orientation: landscape) {
-  .calculator {
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-areas:
-    'calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top'
-    'calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top'
-    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
-    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
-    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
-    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
-    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
-    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons';
-  }
-
   .calculator-extra-buttons {
     display: grid;
   }
