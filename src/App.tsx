@@ -120,29 +120,6 @@ const useHotkey = (
   });
 };
 
-const useIpcEvent = (eventName: string, callback: () => void) => {
-  const callbackRef = useRef<typeof callback>();
-  useEffect(() => {
-    callbackRef.current = callback;
-  }, [callback]);
-
-  useEffect(() => {
-    const eventListener = () => {
-      if (callbackRef.current) {
-        callbackRef.current();
-      }
-    };
-
-    // @ts-expect-error no type here
-    if (window.electron) {
-      // @ts-expect-error no type here
-      return window.electron.ipcRenderer.on(eventName, eventListener);
-    }
-
-    return () => {};
-  }, [eventName]);
-};
-
 const Calculator = () => {
   const stackDiv = useRef<HTMLDivElement>(null);
   const [nextTypeWillClearBuffer, setNextTypeWillClearBuffer] = useLocalStorage('calculator-next-type-will-clear-buffer', false);
@@ -168,7 +145,6 @@ const Calculator = () => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(buffer);
   };
-  useIpcEvent('calculator-copy', copyToClipboard);
   useHotkey('ctrl+KeyC', copyToClipboard);
 
   const pasteFromClipboard = async () => {
@@ -184,7 +160,6 @@ const Calculator = () => {
     setNextTypeWillClearBuffer(false);
     setNextTypeWillPushBuffer(true);
   };
-  useIpcEvent('calculator-paste', pasteFromClipboard);
   useHotkey('ctrl+KeyV', pasteFromClipboard);
 
   const popStack = () => {
