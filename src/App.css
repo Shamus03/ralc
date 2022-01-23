@@ -1,8 +1,42 @@
+:root {
+  --background-color: #e6e6e6;
+  --text-color: black;
+  --muted-text-color: #636363;
+  --very-muted-text-color: #a0a0a0;
+
+  --calculator-button-color: #f0f0f0;
+  --calculator-button-dark-color: #fafafa;
+  --calculator-button-light-color: #a3a3a3;
+  --calculator-button-hover-color: #b3b3b3;
+  --calculator-button-active-color: #a5a5a5;
+
+  --scrollbar-thumb-color: #686868;
+  --scrollbar-thumb-hover-color: #555;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #1f1f1f;
+    --text-color: white;
+    --muted-text-color: #c5c5c5;
+    --very-muted-text-color: #646464;
+
+    --calculator-button-color: #131313;
+    --calculator-button-dark-color: #060606;
+    --calculator-button-light-color: #2c2c2c;
+    --calculator-button-hover-color: #4b4b4b;
+    --calculator-button-active-color: #5f6164;
+
+    --scrollbar-thumb-color: #686868;
+    --scrollbar-thumb-hover-color: #555;
+  }
+}
+
 body {
   margin: 0;
   position: relative;
-  color: white;
-  background: #1f1f1f;
+  color: var(--text-color);
+  background: var(--background-color);
   overflow-y: hidden;
   display: flex;
   justify-content: center;
@@ -53,7 +87,7 @@ html, body, #root {
 
 .calculator-stack {
   width: 100%;
-  color: #c5c5c5;
+  color: var(--muted-text-color);
   overflow-y: auto;
   padding-right: 10px;
   margin-top: auto;
@@ -101,27 +135,27 @@ html, body, #root {
   padding: 0;
   margin: 1px;
   font-size: 2em;
-  color: white;
+  color: var(--text-color);
   border: none;
-  background: #131313;
+  background: var(--calculator-button-color);
   align-items: center;
   justify-content: center;
   user-select: none;
 }
 
 .calculator-button-dark {
-  background: #060606;
+  background: var(--calculator-button-dark-color);
 }
 .calculator-button-light {
-  background: #2c2c2c;
+  background: var(--calculator-button-light-color);
 }
 
 .calculator-button:hover {
-  background: #4b4b4b;
+  background: var(--calculator-button-hover-color);
 }
 
 .calculator-button:active, .calculator-button-active {
-  background: #5f6164;
+  background: var(--calculator-button-active-color);
 }
 
 sup, sub {
@@ -130,7 +164,7 @@ sup, sub {
 
 .version {
   position: fixed;
-  color: #5f6164;
+  color: var(--very-muted-text-color);
   padding-left: env(safe-area-inset-left);
   top: 5px;
   left: 5px;
@@ -152,10 +186,10 @@ sup, sub {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #686868;
+  background: var(--scrollbar-thumb-color);
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--scrollbar-thumb-hover-color);
 }
