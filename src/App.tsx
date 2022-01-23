@@ -1,5 +1,5 @@
-import { createContext, Fragment, ReactFragment, useEffect, useRef, useState } from 'react';
-import './App.css';
+import { createContext, Fragment, ReactFragment, useEffect, useRef, useState } from 'react'
+import './App.css'
 
 const CalculatorButton = ({
   children,
@@ -25,16 +25,17 @@ const CalculatorButton = ({
     >
       {children}
     </button>
-  );
-};
+  )
+}
 CalculatorButton.defaultProps = {
   dark: false,
   light: false,
   className: '',
-};
+}
 
 const CalculatorContext = createContext({
-  typeDigit: (digit: number) => { }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  typeDigit: (digit: number) => { /* noop */ },
 })
 
 const DigitButton = ({ digit }: { digit: number }) => {
@@ -46,188 +47,188 @@ const DigitButton = ({ digit }: { digit: number }) => {
         </CalculatorButton>
       )}
     </CalculatorContext.Consumer>
-  );
-};
+  )
+}
 
 function useEventListener<K extends keyof WindowEventMap>(
   eventName: K,
-  callback: (e: WindowEventMap[K]) => void
+  callback: (e: WindowEventMap[K]) => void,
 ) {
-  const callbackRef = useRef<typeof callback>();
+  const callbackRef = useRef<typeof callback>()
   useEffect(() => {
-    callbackRef.current = callback;
-  }, [callback]);
+    callbackRef.current = callback
+  }, [callback])
 
   useEffect(() => {
     const eventListener = (e: WindowEventMap[K]) => {
       if (callbackRef.current) {
-        callbackRef.current(e);
+        callbackRef.current(e)
       }
-    };
+    }
 
-    window.addEventListener(eventName, eventListener);
+    window.addEventListener(eventName, eventListener)
     return () => {
-      window.removeEventListener(eventName, eventListener);
-    };
-  }, [eventName]);
+      window.removeEventListener(eventName, eventListener)
+    }
+  }, [eventName])
 }
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
+      const item = window.localStorage.getItem(key)
+      return item ? JSON.parse(item) : initialValue
     } catch (error) {
-      console.log(error);
-      return initialValue;
+      console.log(error)
+      return initialValue
     }
-  });
+  })
   const setValue = (value: T) => {
     try {
       const valueToStore =
-        value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        value instanceof Function ? value(storedValue) : value
+      setStoredValue(valueToStore)
+      window.localStorage.setItem(key, JSON.stringify(valueToStore))
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
-  return [storedValue, setValue];
+  }
+  return [storedValue, setValue]
 }
 
 const useHotkey = (
   key: string | number,
-  callback: (e: KeyboardEvent) => void
+  callback: (e: KeyboardEvent) => void,
 ) => {
-  let ctrl = false;
-  let shift = false;
-  let keyToListen: string | number = '';
+  let ctrl = false
+  let shift = false
+  let keyToListen: string | number = ''
   if (typeof key === 'string' && key.includes('+')) {
     const spl = key.split('+');
-    [keyToListen] = spl.slice(-1);
-    ctrl = spl.includes('ctrl');
-    shift = spl.includes('shift');
+    [keyToListen] = spl.slice(-1)
+    ctrl = spl.includes('ctrl')
+    shift = spl.includes('shift')
   } else {
-    keyToListen = key;
+    keyToListen = key
   }
 
   useEventListener('keydown', (e: KeyboardEvent) => {
-    if (ctrl !== e.ctrlKey) return;
-    if (shift !== e.shiftKey) return;
+    if (ctrl !== e.ctrlKey) return
+    if (shift !== e.shiftKey) return
     if (e.key === keyToListen || e.code === keyToListen) {
-      callback(e);
+      callback(e)
     }
-  });
-};
+  })
+}
 
 const Calculator = () => {
-  const stackDiv = useRef<HTMLDivElement>(null);
-  const [nextTypeWillClearBuffer, setNextTypeWillClearBuffer] = useLocalStorage('calculator-next-type-will-clear-buffer', false);
-  const [nextTypeWillPushBuffer, setNextTypeWillPushBuffer] = useLocalStorage('calculator-next-type-will-push-buffer', false);
-  const [stack, setStack] = useLocalStorage<number[]>('calculator-stack', []);
+  const stackDiv = useRef<HTMLDivElement>(null)
+  const [nextTypeWillClearBuffer, setNextTypeWillClearBuffer] = useLocalStorage('calculator-next-type-will-clear-buffer', false)
+  const [nextTypeWillPushBuffer, setNextTypeWillPushBuffer] = useLocalStorage('calculator-next-type-will-push-buffer', false)
+  const [stack, setStack] = useLocalStorage<number[]>('calculator-stack', [])
   const pushStack = (v: number) => {
-    setNextTypeWillClearBuffer(true);
-    setStack([...stack, v]);
+    setNextTypeWillClearBuffer(true)
+    setStack([...stack, v])
     setTimeout(() => {
-      stackDiv.current?.scrollTo(0, stackDiv.current.scrollHeight);
-    });
-  };
+      stackDiv.current?.scrollTo(0, stackDiv.current.scrollHeight)
+    })
+  }
 
-  const [buffer, setBuffer] = useLocalStorage('calculator-buffer', '0');
-  const setBufferN = (v: number) => setBuffer(v.toString());
+  const [buffer, setBuffer] = useLocalStorage('calculator-buffer', '0')
+  const setBufferN = (v: number) => setBuffer(v.toString())
 
   const pushBuffer = () => {
-    pushStack(+buffer);
-    setNextTypeWillPushBuffer(false);
-  };
-  useHotkey('Enter', pushBuffer);
+    pushStack(+buffer)
+    setNextTypeWillPushBuffer(false)
+  }
+  useHotkey('Enter', pushBuffer)
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(buffer);
-  };
-  useHotkey('ctrl+KeyC', copyToClipboard);
+    navigator.clipboard.writeText(buffer)
+  }
+  useHotkey('ctrl+KeyC', copyToClipboard)
 
   const pasteFromClipboard = async () => {
-    const text = await navigator.clipboard.readText();
-    const lines = text.split('\n');
+    const text = await navigator.clipboard.readText()
+    const lines = text.split('\n')
     const nums = lines
       .map((l) => +l.replace(/[,]/g, ''))
-      .filter((n) => !Number.isNaN(n));
-    if (!nums.length) return;
+      .filter((n) => !Number.isNaN(n))
+    if (!nums.length) return
 
-    setStack([...stack, +buffer, ...nums.slice(0, -1)]);
-    setBufferN(nums.slice(-1)[0]);
-    setNextTypeWillClearBuffer(false);
-    setNextTypeWillPushBuffer(true);
-  };
-  useHotkey('ctrl+KeyV', pasteFromClipboard);
+    setStack([...stack, +buffer, ...nums.slice(0, -1)])
+    setBufferN(nums.slice(-1)[0])
+    setNextTypeWillClearBuffer(false)
+    setNextTypeWillPushBuffer(true)
+  }
+  useHotkey('ctrl+KeyV', pasteFromClipboard)
 
   const popStack = () => {
-    setStack(stack.slice(0, -1));
-  };
-  useHotkey('ctrl+Delete', popStack);
+    setStack(stack.slice(0, -1))
+  }
+  useHotkey('ctrl+Delete', popStack)
 
   const normalizeBuffer = (b: string) =>
-    b.replace(/^0+(?=\d)/g, '').replace(/^\.$/, '0.');
+    b.replace(/^0+(?=\d)/g, '').replace(/^\.$/, '0.')
 
   const typeKey = (k: string) => {
     if (nextTypeWillPushBuffer) {
-      pushBuffer();
-      setBuffer(normalizeBuffer(k));
+      pushBuffer()
+      setBuffer(normalizeBuffer(k))
     } else if (nextTypeWillClearBuffer) {
-      setBuffer(normalizeBuffer(k));
+      setBuffer(normalizeBuffer(k))
     } else if (k !== '.' || !buffer.includes('.')) {
-      setBuffer(normalizeBuffer(buffer + k));
+      setBuffer(normalizeBuffer(buffer + k))
     }
-    setNextTypeWillClearBuffer(false);
-    setNextTypeWillPushBuffer(false);
+    setNextTypeWillClearBuffer(false)
+    setNextTypeWillPushBuffer(false)
     setAltEnabled(false)
-  };
+  }
 
   const typeDigit = (d: number) => {
-    typeKey(d.toString());
-  };
-  useHotkey('0', () => typeDigit(0));
-  useHotkey('1', () => typeDigit(1));
-  useHotkey('2', () => typeDigit(2));
-  useHotkey('3', () => typeDigit(3));
-  useHotkey('4', () => typeDigit(4));
-  useHotkey('5', () => typeDigit(5));
-  useHotkey('6', () => typeDigit(6));
-  useHotkey('7', () => typeDigit(7));
-  useHotkey('8', () => typeDigit(8));
-  useHotkey('9', () => typeDigit(9));
+    typeKey(d.toString())
+  }
+  useHotkey('0', () => typeDigit(0))
+  useHotkey('1', () => typeDigit(1))
+  useHotkey('2', () => typeDigit(2))
+  useHotkey('3', () => typeDigit(3))
+  useHotkey('4', () => typeDigit(4))
+  useHotkey('5', () => typeDigit(5))
+  useHotkey('6', () => typeDigit(6))
+  useHotkey('7', () => typeDigit(7))
+  useHotkey('8', () => typeDigit(8))
+  useHotkey('9', () => typeDigit(9))
 
   const typePeriod = () => {
-    typeKey('.');
-  };
-  useHotkey('Period', typePeriod);
-  useHotkey('NumpadDecimal', typePeriod);
+    typeKey('.')
+  }
+  useHotkey('Period', typePeriod)
+  useHotkey('NumpadDecimal', typePeriod)
 
   const backspace = () => {
     if (buffer.length === 1) {
-      setBuffer('0');
+      setBuffer('0')
     } else {
-      setBuffer(buffer.slice(0, -1));
+      setBuffer(buffer.slice(0, -1))
     }
-    setNextTypeWillClearBuffer(false);
-    setNextTypeWillPushBuffer(false);
-  };
-  useHotkey('Backspace', backspace);
+    setNextTypeWillClearBuffer(false)
+    setNextTypeWillPushBuffer(false)
+  }
+  useHotkey('Backspace', backspace)
 
   const clearBuffer = () => {
-    setBuffer('0');
-    setNextTypeWillPushBuffer(false);
-    setNextTypeWillClearBuffer(false);
-  };
-  useHotkey('shift+Backspace', clearBuffer);
+    setBuffer('0')
+    setNextTypeWillPushBuffer(false)
+    setNextTypeWillClearBuffer(false)
+  }
+  useHotkey('shift+Backspace', clearBuffer)
 
   const clearAll = () => {
-    clearBuffer();
-    setStack([]);
+    clearBuffer()
+    setStack([])
     setAltEnabled(false)
-  };
-  useHotkey('ctrl+Backspace', clearAll);
+  }
+  useHotkey('ctrl+Backspace', clearAll)
 
   const willClearAll = !nextTypeWillClearBuffer && buffer === '0'
 
@@ -245,55 +246,55 @@ const Calculator = () => {
   }
 
   const unaryOp = (fn: (x: number) => number) => () => {
-    setBufferN(fn(+buffer));
-    setNextTypeWillPushBuffer(true);
+    setBufferN(fn(+buffer))
+    setNextTypeWillPushBuffer(true)
     setAltEnabled(false)
-  };
+  }
 
   const binaryOp = (fn: (a: number, b: number) => number) => () => {
-    if (!stack.length) return;
-    const a = stack.slice(-1)[0];
-    setStack(stack.slice(0, -1));
-    const b = +buffer;
-    setBufferN(fn(a, b));
-    setNextTypeWillPushBuffer(true);
+    if (!stack.length) return
+    const a = stack.slice(-1)[0]
+    setStack(stack.slice(0, -1))
+    const b = +buffer
+    setBufferN(fn(a, b))
+    setNextTypeWillPushBuffer(true)
     setAltEnabled(false)
-  };
+  }
 
-  const opPercent = unaryOp((x) => x / 100);
-  useHotkey('shift+Digit5', opPercent);
+  const opPercent = unaryOp((x) => x / 100)
+  useHotkey('shift+Digit5', opPercent)
 
-  const opReciprocal = unaryOp((x) => 1 / x);
-  useHotkey('shift+Digit4', opReciprocal);
+  const opReciprocal = unaryOp((x) => 1 / x)
+  useHotkey('shift+Digit4', opReciprocal)
 
   const opSquare = unaryOp(x => x * x)
-  useHotkey('shift+Digit6', opSquare);
+  useHotkey('shift+Digit6', opSquare)
 
-  const opExponent = binaryOp((a, b) => Math.pow(a, b));
+  const opExponent = binaryOp((a, b) => Math.pow(a, b))
 
-  const opSquareRoot = unaryOp((x) => Math.sqrt(x));
-  useHotkey('shift+ctrl+Digit6', opSquareRoot);
+  const opSquareRoot = unaryOp((x) => Math.sqrt(x))
+  useHotkey('shift+ctrl+Digit6', opSquareRoot)
 
   const opNRoot = binaryOp((a, b) => Math.pow(a, 1/b))
 
-  const opDivide = binaryOp((a, b) => a / b);
-  useHotkey('NumpadDivide', opDivide);
-  useHotkey('Slash', opDivide);
+  const opDivide = binaryOp((a, b) => a / b)
+  useHotkey('NumpadDivide', opDivide)
+  useHotkey('Slash', opDivide)
 
-  const opMultiply = binaryOp((a, b) => a * b);
-  useHotkey('NumpadMultiply', opMultiply);
-  useHotkey('shift+Digit8', opMultiply);
+  const opMultiply = binaryOp((a, b) => a * b)
+  useHotkey('NumpadMultiply', opMultiply)
+  useHotkey('shift+Digit8', opMultiply)
 
-  const opSubtract = binaryOp((a, b) => a - b);
-  useHotkey('NumpadSubtract', opSubtract);
-  useHotkey('Minus', opSubtract);
+  const opSubtract = binaryOp((a, b) => a - b)
+  useHotkey('NumpadSubtract', opSubtract)
+  useHotkey('Minus', opSubtract)
 
-  const opAdd = binaryOp((a, b) => a + b);
-  useHotkey('NumpadAdd', opAdd);
-  useHotkey('shift+Equal', opAdd);
+  const opAdd = binaryOp((a, b) => a + b)
+  useHotkey('NumpadAdd', opAdd)
+  useHotkey('shift+Equal', opAdd)
 
-  const opInvertSign = unaryOp((x) => -x);
-  useHotkey('shift+Minus', opInvertSign);
+  const opInvertSign = unaryOp((x) => -x)
+  useHotkey('shift+Minus', opInvertSign)
 
   const [degrees, setDegrees] = useLocalStorage('calculator-degrees', false)
   const toggleDegrees = () => {
@@ -340,19 +341,19 @@ const Calculator = () => {
 
   const makeConst = (v: number) => () => {
     if (nextTypeWillPushBuffer) {
-      pushBuffer();
+      pushBuffer()
     }
     setBufferN(v)
-    setNextTypeWillClearBuffer(false);
-    setNextTypeWillPushBuffer(true);
+    setNextTypeWillClearBuffer(false)
+    setNextTypeWillPushBuffer(true)
   }
 
   const constPi = makeConst(Math.PI)
   const constE = makeConst(Math.E)
 
   const formatNumber = (n: string | number) => {
-    const parts = n.toString().split('.');
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    const parts = n.toString().split('.')
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     let maxOverallLength = 14
     let e = ''
     if (parts[1] && parts[1].includes('e')) {
@@ -363,10 +364,10 @@ const Calculator = () => {
     if (parts[1] && parts[0].length + parts[1].length > maxOverallLength) {
       parts[1] = Math.round(+parts[1].slice(0, maxOverallLength - parts[0].length + 1)/10).toString() + e
     }
-    return parts.join('.');
-  };
+    return parts.join('.')
+  }
 
-  let nextStackId = 0;
+  let nextStackId = 0
 
   return (
     <div className="calculator">
@@ -470,9 +471,9 @@ const Calculator = () => {
         </div>
       </CalculatorContext.Provider>
     </div>
-  );
-};
+  )
+}
 
 export default function App() {
-  return <Calculator />;
+  return <Calculator />
 }
