@@ -419,7 +419,7 @@ const Calculator = () => {
   return (
     <div className="calculator">
       <div className="version">
-        Ralc v{process.env.REACT_APP_VERSION}
+        Ralc v{process.env.REACT_APP_VERSION ?? 0}
       </div>
 
       <div className="calculator-top">
