@@ -348,6 +348,7 @@ const Calculator = () => {
   }
 
   const constPi = makeConst(Math.PI)
+  const constE = makeConst(Math.E)
 
   const formatNumber = (n: string | number) => {
     const parts = n.toString().split('.');
@@ -398,7 +399,7 @@ const Calculator = () => {
 
           <CalculatorButton onClick={toggleDegrees}>{degrees ? 'Deg' : 'Rad'}</CalculatorButton>
           <CalculatorButton onClick={constPi}>&pi;</CalculatorButton>
-          <div></div>
+          <CalculatorButton onClick={constE}>e</CalculatorButton>
 
           {altEnabled
             ? <Fragment>
