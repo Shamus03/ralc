@@ -429,7 +429,7 @@ const Calculator = () => {
           <CalculatorButton onClick={opLog10}>log<sub>10</sub></CalculatorButton>
 
           <CalculatorButton onClick={toggleDegrees}>{degrees ? 'Deg' : 'Rad'}</CalculatorButton>
-          <CalculatorButton onClick={constPi}>	π</CalculatorButton>
+          <CalculatorButton onClick={constPi}>&pi;</CalculatorButton>
           <div></div>
 
           {altEnabled
@@ -468,7 +468,7 @@ const Calculator = () => {
             : <CalculatorButton onClick={opSquare}>𝑥<sup>2</sup></CalculatorButton>
           }
           {altEnabled
-            ? <CalculatorButton onClick={opNRoot} light><sup>𝑦</sup>√𝑥</CalculatorButton>
+            ? <CalculatorButton onClick={opNRoot} light><sup>𝑦</sup>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
             : <CalculatorButton onClick={opSquareRoot}>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
           }
           <CalculatorButton onClick={opDivide}>÷</CalculatorButton>
@@ -476,12 +476,12 @@ const Calculator = () => {
           <DigitButton digit={7} />
           <DigitButton digit={8} />
           <DigitButton digit={9} />
-          <CalculatorButton onClick={opMultiply}>×</CalculatorButton>
+          <CalculatorButton onClick={opMultiply}>&times;</CalculatorButton>
 
           <DigitButton digit={4} />
           <DigitButton digit={5} />
           <DigitButton digit={6} />
-          <CalculatorButton onClick={opSubtract}>-</CalculatorButton>
+          <CalculatorButton onClick={opSubtract}>&minus;</CalculatorButton>
 
           <DigitButton digit={1} />
           <DigitButton digit={2} />
@@ -489,7 +489,7 @@ const Calculator = () => {
           <CalculatorButton onClick={opAdd}>+</CalculatorButton>
 
           <CalculatorButton dark onClick={opInvertSign}>
-            ±
+            &plusmn;
           </CalculatorButton>
           <DigitButton digit={0} />
           <CalculatorButton dark onClick={typePeriod}>
