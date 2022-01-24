@@ -16,6 +16,10 @@ jobs:
           export REACT_APP_VERSION=${{ github.run_number }}
           npm run build
 
+      - name: Run Tests 🧪
+        run: |
+          npm run test
+
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.2.2
         with:

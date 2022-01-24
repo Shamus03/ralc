@@ -1,4 +1,5 @@
 import { createContext, Fragment, ReactFragment, useEffect, useRef, useState } from 'react'
+import formatNumber from './format-number'
 import './App.css'
 
 const CalculatorButton = ({
@@ -350,22 +351,6 @@ const Calculator = () => {
 
   const constPi = makeConst(Math.PI)
   const constE = makeConst(Math.E)
-
-  const formatNumber = (n: string | number) => {
-    const parts = n.toString().split('.')
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-    let maxOverallLength = 14
-    let e = ''
-    if (parts[1] && parts[1].includes('e')) {
-      const spl = parts[1].split('e')
-      maxOverallLength -= spl[1].length
-      e = 'e' + spl[1]
-    }
-    if (parts[1] && parts[0].length + parts[1].length > maxOverallLength) {
-      parts[1] = Math.round(+parts[1].slice(0, maxOverallLength - parts[0].length + 1)/10).toString() + e
-    }
-    return parts.join('.')
-  }
 
   let nextStackId = 0
 
