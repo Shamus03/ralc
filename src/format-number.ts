@@ -1,5 +1,5 @@
 const formatNumber = (n: string | number) => {
-  const parts = n.toString().split('.')
+  const parts = n.toString().replace('+', '').split('.')
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   let maxOverallLength = 14
   let e = ''

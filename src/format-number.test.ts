@@ -28,4 +28,8 @@ describe('formatNumber', () => {
   it('Does not break on small numbers', () => {
     expect(formatNumber('0.00000000000025')).toBe('0.0000000000003')
   })
+
+  it('Strips redundant + symbol', () => {
+    expect(formatNumber('1e+50')).toBe('1e50')
+  })
 })
