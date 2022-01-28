@@ -35,7 +35,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "eject": "react-scripts eject",
-    "generate-icons": "pwa-asset-generator public/icon-light.png ./public/icons --index public/index.html --manifest public/manifest.json && pwa-asset-generator public/icon-dark.png ./public/icons --index public/index.html --manifest public/manifest.json --favicon --background black --dark-mode"
+    "generate-icons": "pwa-asset-generator public/icon-light.png ./public/icons --index public/index.html --manifest public/manifest.json --background #e6e6e6 && pwa-asset-generator public/icon-dark.png ./public/icons --index public/index.html --manifest public/manifest.json --favicon --background #1f1f1f --dark-mode"
   },
   "browserslist": {
     "production": [
