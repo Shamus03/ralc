@@ -32,4 +32,10 @@ describe('formatNumber', () => {
   it('Strips redundant + symbol', () => {
     expect(formatNumber('1e+50')).toBe('1e50')
   })
+
+  it('Correctly rounds numbers very close to 1', () => {
+    expect(formatNumber('0.99999999999995')).toBe('1')
+    expect(formatNumber('0.99999999999994')).toBe('0.9999999999999')
+    expect(formatNumber('9999.9999999995')).toBe('10,000')
+  })
 })
