@@ -1,4 +1,5 @@
 import { createContext, Fragment, ReactFragment, useEffect, useRef, useState } from 'react'
+import PWAPrompt from 'react-ios-pwa-prompt'
 import formatNumber from './format-number'
 import './App.css'
 
@@ -460,5 +461,8 @@ const Calculator = () => {
 }
 
 export default function App() {
-  return <Calculator />
+  return <Fragment>
+    <Calculator />
+    <PWAPrompt />
+  </Fragment>
 }
