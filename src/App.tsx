@@ -72,7 +72,7 @@ function useEventListener<K extends keyof WindowEventMap>(
   }, [eventName])
 }
 
-function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
+function useLocalStorage<T>(key: string, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] {
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       const item = window.localStorage.getItem(key)
@@ -82,7 +82,7 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => voi
       return initialValue
     }
   })
-  const setValue = (value: T) => {
+  const setValue = (value: React.SetStateAction<T>) => {
     try {
       const valueToStore =
         value instanceof Function ? value(storedValue) : value
