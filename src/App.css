@@ -173,6 +173,8 @@ sup, sub {
   padding-left: env(safe-area-inset-left);
   top: 5px;
   left: 5px;
+  pointer-events: none;
+  user-select: none;
 }
 
 .text-decoration-overline {
