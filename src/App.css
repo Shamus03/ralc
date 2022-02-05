@@ -113,6 +113,7 @@ html, body, #root {
 .calculator-buffer {
   font-size: 3em;
   padding-right: 10px;
+  white-space: nowrap;
 }
 
 .calculator-buttons {
