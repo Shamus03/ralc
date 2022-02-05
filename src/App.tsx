@@ -143,7 +143,9 @@ const Calculator = () => {
   useHotkey('Enter', pushBuffer)
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(buffer)
+    if (!window.getSelection()?.toString()) {
+      navigator.clipboard.writeText(buffer)
+    }
   }
   useHotkey('ctrl+KeyC', copyToClipboard)
 
