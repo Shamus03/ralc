@@ -342,7 +342,7 @@ const Calculator = () => {
   const opAtanh = makeInverseTrigFunc(Math.atanh)
 
   const makeConst = (v: number) => () => {
-    if (nextTypeWillPushBuffer) {
+    if (!nextTypeWillClearBuffer) {
       pushBuffer()
     }
     setBufferN(v)
