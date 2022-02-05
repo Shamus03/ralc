@@ -1,4 +1,4 @@
-import { createContext, Fragment, ReactFragment, useEffect, useRef, useState } from 'react'
+import { createContext, Fragment, ReactFragment, useContext, useEffect, useRef, useState } from 'react'
 import PWAPrompt from 'react-ios-pwa-prompt'
 import formatNumber from './format-number'
 import './App.css'
@@ -41,14 +41,11 @@ const CalculatorContext = createContext({
 })
 
 const DigitButton = ({ digit }: { digit: number }) => {
+  const { typeDigit } = useContext(CalculatorContext)
   return (
-    <CalculatorContext.Consumer>
-      {({ typeDigit }) => (
-        <CalculatorButton dark onClick={() => typeDigit(digit)}>
-          {digit.toString()}
-        </CalculatorButton>
-      )}
-    </CalculatorContext.Consumer>
+    <CalculatorButton dark onClick={() => typeDigit(digit)}>
+      {digit.toString()}
+    </CalculatorButton>
   )
 }
 
