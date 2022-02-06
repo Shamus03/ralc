@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
 import * as serviceWorkerRegistration from './serviceWorkerRegistration'
 import reportWebVitals from './reportWebVitals'
 import scrollLock from './scroll-lock'
+
 
 ReactDOM.render(
   <React.StrictMode>
@@ -11,6 +12,12 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root'),
 )
+
+declare global {
+  interface WindowEventMap {
+    'SW_UPDATE_WAITING': CustomEvent<() => void>,
+  }
+}
 
 serviceWorkerRegistration.register({
   onUpdate: reg => {
@@ -20,7 +27,12 @@ serviceWorkerRegistration.register({
           window.location.reload()
         }
       })
-      reg.waiting.postMessage({ type: 'SKIP_WAITING' })
+      const waiting = reg.waiting
+      window.dispatchEvent(new CustomEvent('SW_UPDATE_WAITING', {
+        detail() {
+          waiting.postMessage({ type: 'SKIP_WAITING' })
+        },
+      }))
     }
   },
 })

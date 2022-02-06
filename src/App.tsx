@@ -356,10 +356,6 @@ const Calculator = () => {
 
   return (
     <div className="calculator">
-      <div className="version">
-        Ralc v{process.env.REACT_APP_VERSION ?? 0}
-      </div>
-
       <div className="calculator-top">
         <div className="calculator-stack" ref={stackDiv}>
           {stack.map((s) => (
@@ -459,8 +455,30 @@ const Calculator = () => {
   )
 }
 
+const VersionIndicator = () => {
+  const [confirmUpdate, setConfirmUpdate] = useState<() => void>()
+  useEventListener('SW_UPDATE_WAITING', e => {
+    setConfirmUpdate(() => e.detail)
+  })
+  return (
+    <div className="version">
+      Ralc v{process.env.REACT_APP_VERSION ?? 0}
+      {confirmUpdate && <Fragment>
+        &nbsp;
+        <a href="#" onClick={e => {
+          e.preventDefault()
+          confirmUpdate()
+        }}>
+          Update
+        </a>
+      </Fragment>}
+    </div>
+  )
+}
+
 export default function App() {
   return <Fragment>
+    <VersionIndicator />
     <Calculator />
     <PWAPrompt />
   </Fragment>

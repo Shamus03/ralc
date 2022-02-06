@@ -177,6 +177,11 @@ sup, sub {
   user-select: none;
 }
 
+.version a {
+  pointer-events: all;
+  color: var(--very-muted-text-color);
+}
+
 .text-decoration-overline {
   text-decoration: overline;
   text-decoration-thickness: from-font;
