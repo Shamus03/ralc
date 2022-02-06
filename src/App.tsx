@@ -122,9 +122,9 @@ const useHotkey = (
 
 const Calculator = () => {
   const stackDiv = useRef<HTMLDivElement>(null)
-  const [nextTypeWillClearBuffer, setNextTypeWillClearBuffer] = useLocalStorage('calculator-next-type-will-clear-buffer', false)
-  const [nextTypeWillPushBuffer, setNextTypeWillPushBuffer] = useLocalStorage('calculator-next-type-will-push-buffer', false)
-  const [stack, setStack] = useLocalStorage<number[]>('calculator-stack', [])
+  const [nextTypeWillClearBuffer, setNextTypeWillClearBuffer] = useState(false)
+  const [nextTypeWillPushBuffer, setNextTypeWillPushBuffer] = useState(false)
+  const [stack, setStack] = useState<number[]>([])
   const pushStack = (v: number) => {
     setNextTypeWillClearBuffer(true)
     setStack([...stack, v])
@@ -133,7 +133,7 @@ const Calculator = () => {
     })
   }
 
-  const [buffer, setBuffer] = useLocalStorage('calculator-buffer', '0')
+  const [buffer, setBuffer] = useState('0')
   const setBufferN = (v: number) => setBuffer(v.toString())
 
   const pushBuffer = () => {
@@ -241,7 +241,7 @@ const Calculator = () => {
     }
   }
 
-  const [altEnabled, setAltEnabled] = useLocalStorage('calculator-alt-enabled', false)
+  const [altEnabled, setAltEnabled] = useState(false)
   const toggle2nd = () => {
     setAltEnabled(!altEnabled)
   }
