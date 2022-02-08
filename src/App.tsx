@@ -8,20 +8,20 @@ const CalculatorButton = ({
   dark,
   light,
   className,
-  onClick,
+  action,
 }: {
   children: ReactFragment;
   dark?: boolean;
   light?: boolean;
   className?: string,
-  onClick: () => void;
+  action: () => void;
 }) => {
   return (
     <button
       type="button"
       className={`calculator-button ${dark ? 'calculator-button-dark' : ''} ${light ? 'calculator-button-light' : ''} ${className}`}
       onClick={(e) => {
-        onClick()
+        action()
         e.currentTarget.blur()
       }}
     >
@@ -43,7 +43,7 @@ const CalculatorContext = createContext({
 const DigitButton = ({ digit }: { digit: number }) => {
   const { typeDigit } = useContext(CalculatorContext)
   return (
-    <CalculatorButton dark onClick={() => typeDigit(digit)}>
+    <CalculatorButton dark action={() => typeDigit(digit)}>
       {digit.toString()}
     </CalculatorButton>
   )
@@ -372,81 +372,81 @@ const Calculator = () => {
           <div></div>
 
           <div></div>
-          <CalculatorButton onClick={opFloor}>&lfloor;𝑥&rfloor;</CalculatorButton>
-          <CalculatorButton onClick={opCeiling}>&lceil;𝑥&rceil;</CalculatorButton>
+          <CalculatorButton action={opFloor}>&lfloor;𝑥&rfloor;</CalculatorButton>
+          <CalculatorButton action={opCeiling}>&lceil;𝑥&rceil;</CalculatorButton>
 
           <div></div>
-          <CalculatorButton onClick={opLn}>ln</CalculatorButton>
-          <CalculatorButton onClick={opLog10}>log<sub>10</sub></CalculatorButton>
+          <CalculatorButton action={opLn}>ln</CalculatorButton>
+          <CalculatorButton action={opLog10}>log<sub>10</sub></CalculatorButton>
 
-          <CalculatorButton onClick={toggleDegrees}>{degrees ? 'Deg' : 'Rad'}</CalculatorButton>
-          <CalculatorButton onClick={constPi}>&pi;</CalculatorButton>
-          <CalculatorButton onClick={constE}>e</CalculatorButton>
+          <CalculatorButton action={toggleDegrees}>{degrees ? 'Deg' : 'Rad'}</CalculatorButton>
+          <CalculatorButton action={constPi}>&pi;</CalculatorButton>
+          <CalculatorButton action={constE}>e</CalculatorButton>
 
           {altEnabled
             ? <Fragment>
-              <CalculatorButton onClick={opAsin} light>sin<sup>-1</sup></CalculatorButton>
-              <CalculatorButton onClick={opAcos} light>cos<sup>-1</sup></CalculatorButton>
-              <CalculatorButton onClick={opAtan} light>tan<sup>-1</sup></CalculatorButton>
+              <CalculatorButton action={opAsin} light>sin<sup>-1</sup></CalculatorButton>
+              <CalculatorButton action={opAcos} light>cos<sup>-1</sup></CalculatorButton>
+              <CalculatorButton action={opAtan} light>tan<sup>-1</sup></CalculatorButton>
 
-              <CalculatorButton onClick={opAsinh} light>sinh<sup>-1</sup></CalculatorButton>
-              <CalculatorButton onClick={opAcosh} light>cosh<sup>-1</sup></CalculatorButton>
-              <CalculatorButton onClick={opAtanh} light>tanh<sup>-1</sup></CalculatorButton>
+              <CalculatorButton action={opAsinh} light>sinh<sup>-1</sup></CalculatorButton>
+              <CalculatorButton action={opAcosh} light>cosh<sup>-1</sup></CalculatorButton>
+              <CalculatorButton action={opAtanh} light>tanh<sup>-1</sup></CalculatorButton>
             </Fragment>
             : <Fragment>
-              <CalculatorButton onClick={opSin}>sin</CalculatorButton>
-              <CalculatorButton onClick={opCos}>cos</CalculatorButton>
-              <CalculatorButton onClick={opTan}>tan</CalculatorButton>
+              <CalculatorButton action={opSin}>sin</CalculatorButton>
+              <CalculatorButton action={opCos}>cos</CalculatorButton>
+              <CalculatorButton action={opTan}>tan</CalculatorButton>
 
-              <CalculatorButton onClick={opSinh}>sinh</CalculatorButton>
-              <CalculatorButton onClick={opCosh}>cosh</CalculatorButton>
-              <CalculatorButton onClick={opTanh}>tanh</CalculatorButton>
+              <CalculatorButton action={opSinh}>sinh</CalculatorButton>
+              <CalculatorButton action={opCosh}>cosh</CalculatorButton>
+              <CalculatorButton action={opTanh}>tanh</CalculatorButton>
             </Fragment>}
 
         </div>
 
         <div className="calculator-buttons">
-          <CalculatorButton onClick={toggle2nd} className={altEnabled ? 'calculator-button-active' : ''}>2<sup>nd</sup></CalculatorButton>
-          <CalculatorButton onClick={opPercent}>%</CalculatorButton>
-          <CalculatorButton onClick={clearOrClearAll}>
+          <CalculatorButton action={toggle2nd} className={altEnabled ? 'calculator-button-active' : ''}>2<sup>nd</sup></CalculatorButton>
+          <CalculatorButton action={opPercent}>%</CalculatorButton>
+          <CalculatorButton action={clearOrClearAll}>
             {willClearAll ? 'C' : 'CE'}
           </CalculatorButton>
-          <CalculatorButton onClick={backspace}>⌫</CalculatorButton>
+          <CalculatorButton action={backspace}>⌫</CalculatorButton>
 
-          <CalculatorButton onClick={opReciprocal}>⅟𝑥</CalculatorButton>
+          <CalculatorButton action={opReciprocal}>⅟𝑥</CalculatorButton>
           {altEnabled
-            ? <CalculatorButton onClick={opExponent} light>𝑥<sup>𝑦</sup></CalculatorButton>
-            : <CalculatorButton onClick={opSquare}>𝑥<sup>2</sup></CalculatorButton>
+            ? <CalculatorButton action={opExponent} light>𝑥<sup>𝑦</sup></CalculatorButton>
+            : <CalculatorButton action={opSquare}>𝑥<sup>2</sup></CalculatorButton>
           }
           {altEnabled
-            ? <CalculatorButton onClick={opNRoot} light><sup>𝑦</sup>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
-            : <CalculatorButton onClick={opSquareRoot}>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
+            ? <CalculatorButton action={opNRoot} light><sup>𝑦</sup>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
+            : <CalculatorButton action={opSquareRoot}>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
           }
-          <CalculatorButton onClick={opDivide}>÷</CalculatorButton>
+          <CalculatorButton action={opDivide}>÷</CalculatorButton>
 
           <DigitButton digit={7} />
           <DigitButton digit={8} />
           <DigitButton digit={9} />
-          <CalculatorButton onClick={opMultiply}>&times;</CalculatorButton>
+          <CalculatorButton action={opMultiply}>&times;</CalculatorButton>
 
           <DigitButton digit={4} />
           <DigitButton digit={5} />
           <DigitButton digit={6} />
-          <CalculatorButton onClick={opSubtract}>&minus;</CalculatorButton>
+          <CalculatorButton action={opSubtract}>&minus;</CalculatorButton>
 
           <DigitButton digit={1} />
           <DigitButton digit={2} />
           <DigitButton digit={3} />
-          <CalculatorButton onClick={opAdd}>+</CalculatorButton>
+          <CalculatorButton action={opAdd}>+</CalculatorButton>
 
-          <CalculatorButton dark onClick={opInvertSign}>
+          <CalculatorButton dark action={opInvertSign}>
             &plusmn;
           </CalculatorButton>
           <DigitButton digit={0} />
-          <CalculatorButton dark onClick={typePeriod}>
+          <CalculatorButton dark action={typePeriod}>
             .
           </CalculatorButton>
-          <CalculatorButton light onClick={pushBuffer}>
+          <CalculatorButton light action={pushBuffer}>
             ⎆
           </CalculatorButton>
         </div>
