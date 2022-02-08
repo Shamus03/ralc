@@ -55,6 +55,9 @@ const CalculatorButton = ({
     for (const shortcut of shortcuts) {
       useEventListener('keydown', modifyForHotkey(shortcut, onPress))
       useEventListener('keyup', modifyForHotkey(shortcut, onRelease))
+
+      // Releasing the modifier before the main button should "cancel" the keypress
+      useEventListener('keyup', modifyForHotkey(shortcut, onDragOut, { ignoreModifiers: true }))
     }
   }
 
@@ -187,22 +190,22 @@ function coerceArray<T> (v: (T | T[])): T[] {
   return [v]
 }
 
-const modifyForHotkey = (key: string, handler: (e: KeyboardEvent) => void): (e: KeyboardEvent) => void => {
-  let ctrl = false
-  let shift = false
+const modifyForHotkey = (key: string, handler: (e: KeyboardEvent) => void, opts?: { ignoreModifiers?: boolean }): (e: KeyboardEvent) => void => {
+  let ctrl: boolean | undefined = false
+  let shift: boolean | undefined = false
   let keyToListen: string | number = ''
   if (typeof key === 'string' && key.includes('+')) {
     const spl = key.split('+');
     [keyToListen] = spl.slice(-1)
-    ctrl = spl.includes('ctrl')
-    shift = spl.includes('shift')
+    ctrl = opts?.ignoreModifiers ? undefined : spl.includes('ctrl')
+    shift = opts?.ignoreModifiers ? undefined : spl.includes('shift')
   } else {
     keyToListen = key
   }
 
   return (e: KeyboardEvent) => {
-    if (ctrl !== e.ctrlKey) return
-    if (shift !== e.shiftKey) return
+    if (ctrl !== undefined && ctrl !== e.ctrlKey) return
+    if (shift !== undefined && shift !== e.shiftKey) return
     if (e.key === keyToListen || e.code === keyToListen) {
       handler(e)
     }
@@ -314,6 +317,7 @@ const Calculator = () => {
   const willClearAll = !nextTypeWillClearBuffer && buffer === '0'
 
   const clearOrClearAll = () => {
+    console.log('clear')
     if (willClearAll) {
       clearAll()
     } else {
