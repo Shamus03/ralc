@@ -148,6 +148,10 @@ html, body, #root {
   user-select: none;
 }
 
+.calculator-button:focus-visible {
+  outline: none;
+}
+
 .calculator-button-dark {
   background: var(--calculator-button-dark-color);
 }
@@ -155,11 +159,11 @@ html, body, #root {
   background: var(--calculator-button-light-color);
 }
 
-.calculator-button:hover {
+.calculator-button.hovered {
   background: var(--calculator-button-hover-color);
 }
 
-.calculator-button:active, .calculator-button-active {
+.calculator-button.pressed, .calculator-button-active {
   background: var(--calculator-button-active-color);
 }
 

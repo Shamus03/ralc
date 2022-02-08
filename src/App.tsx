@@ -1,7 +1,21 @@
-import { createContext, Fragment, ReactFragment, useContext, useEffect, useRef, useState } from 'react'
+import { ButtonHTMLAttributes, createContext, createRef, Fragment, ReactFragment, useContext, useEffect, useRef, useState } from 'react'
 import PWAPrompt from 'react-ios-pwa-prompt'
 import formatNumber from './format-number'
 import './App.css'
+
+type ClassSpec = string | boolean | undefined | { [className: string]: boolean }
+const makeClasses = (classes: ClassSpec | ClassSpec[]): string => {
+  if (Array.isArray(classes)) {
+    return classes.map(makeClasses).filter(v => v).join(' ')
+  }
+  if (typeof classes === 'string') {
+    return classes
+  }
+  if (typeof classes === 'boolean' || typeof classes === 'undefined') {
+    return ''
+  }
+  return Object.entries(classes).map(([k, v]) => v ? k : '').filter(v => v).join(' ')
+}
 
 const CalculatorButton = ({
   children,
@@ -9,21 +23,92 @@ const CalculatorButton = ({
   light,
   className,
   action,
+  shortcuts,
 }: {
   children: ReactFragment;
   dark?: boolean;
   light?: boolean;
   className?: string,
   action: () => void;
+  shortcuts?: string | string[],
 }) => {
+  const [hovered, setHovered] = useState(false)
+  const [pressed, setPressed] = useState(false)
+
+  const onPress = () => {
+    setPressed(true)
+  }
+
+  const onDragOut = () => {
+    setPressed(false)
+  }
+
+  const onRelease = () => {
+    if (pressed) {
+      action()
+    }
+    setPressed(false)
+  }
+
+  if (shortcuts) {
+    shortcuts = coerceArray(shortcuts)
+    for (const shortcut of shortcuts) {
+      useEventListener('keydown', modifyForHotkey(shortcut, onPress))
+      useEventListener('keyup', modifyForHotkey(shortcut, onRelease))
+    }
+  }
+
+  const events: ButtonHTMLAttributes<HTMLButtonElement> = 'ontouchstart' in window
+    ? {
+      onTouchStart() {
+        onPress()
+      },
+      onTouchMove(e) {
+        const touch = e.touches[0]
+        const currentElement = document.elementFromPoint(touch.pageX, touch.pageY)
+        if (currentElement !== elementRef.current) {
+          onDragOut()
+        }
+      },
+      onTouchEnd() {
+        onRelease()
+      },
+      onTouchCancel() {
+        onRelease()
+      },
+    }
+    : {
+      onMouseDown() {
+        onPress()
+      },
+      onMouseUp() {
+        onRelease()
+      },
+      onMouseEnter(e) {
+        setHovered(true)
+        if (e.buttons) {
+          onPress()
+        }
+      },
+      onMouseLeave() {
+        setHovered(false)
+        onDragOut()
+      },
+    }
+
+  const elementRef = createRef<HTMLButtonElement>()
   return (
     <button
+      ref={elementRef}
       type="button"
-      className={`calculator-button ${dark ? 'calculator-button-dark' : ''} ${light ? 'calculator-button-light' : ''} ${className}`}
-      onClick={(e) => {
-        action()
-        e.currentTarget.blur()
-      }}
+      className={makeClasses([
+        'calculator-button',
+        dark && 'calculator-button-dark',
+        light && 'calculator-button-light',
+        { pressed, hovered },
+        className,
+      ])}
+      {...events}
     >
       {children}
     </button>
@@ -43,7 +128,7 @@ const CalculatorContext = createContext({
 const DigitButton = ({ digit }: { digit: number }) => {
   const { typeDigit } = useContext(CalculatorContext)
   return (
-    <CalculatorButton dark action={() => typeDigit(digit)}>
+    <CalculatorButton dark action={() => typeDigit(digit)} shortcuts={digit.toString()}>
       {digit.toString()}
     </CalculatorButton>
   )
@@ -95,10 +180,14 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, React.Dispatch<Re
   return [storedValue, setValue]
 }
 
-const useHotkey = (
-  key: string | number,
-  callback: (e: KeyboardEvent) => void,
-) => {
+function coerceArray<T> (v: (T | T[])): T[] {
+  if (Array.isArray(v)) {
+    return v
+  }
+  return [v]
+}
+
+const modifyForHotkey = (key: string, handler: (e: KeyboardEvent) => void): (e: KeyboardEvent) => void => {
   let ctrl = false
   let shift = false
   let keyToListen: string | number = ''
@@ -111,13 +200,20 @@ const useHotkey = (
     keyToListen = key
   }
 
-  useEventListener('keydown', (e: KeyboardEvent) => {
+  return (e: KeyboardEvent) => {
     if (ctrl !== e.ctrlKey) return
     if (shift !== e.shiftKey) return
     if (e.key === keyToListen || e.code === keyToListen) {
-      callback(e)
+      handler(e)
     }
-  })
+  }
+}
+
+const useHotkey = (
+  key: string | number,
+  callback: (e: KeyboardEvent) => void,
+) => {
+  useEventListener('keydown', modifyForHotkey(key.toString(), callback))
 }
 
 const Calculator = () => {
@@ -140,7 +236,6 @@ const Calculator = () => {
     pushStack(+buffer)
     setNextTypeWillPushBuffer(false)
   }
-  useHotkey('Enter', pushBuffer)
 
   const copyToClipboard = () => {
     if (!window.getSelection()?.toString()) {
@@ -189,22 +284,10 @@ const Calculator = () => {
   const typeDigit = (d: number) => {
     typeKey(d.toString())
   }
-  useHotkey('0', () => typeDigit(0))
-  useHotkey('1', () => typeDigit(1))
-  useHotkey('2', () => typeDigit(2))
-  useHotkey('3', () => typeDigit(3))
-  useHotkey('4', () => typeDigit(4))
-  useHotkey('5', () => typeDigit(5))
-  useHotkey('6', () => typeDigit(6))
-  useHotkey('7', () => typeDigit(7))
-  useHotkey('8', () => typeDigit(8))
-  useHotkey('9', () => typeDigit(9))
 
   const typePeriod = () => {
     typeKey('.')
   }
-  useHotkey('Period', typePeriod)
-  useHotkey('NumpadDecimal', typePeriod)
 
   const backspace = () => {
     if (buffer.length === 1) {
@@ -215,21 +298,18 @@ const Calculator = () => {
     setNextTypeWillClearBuffer(false)
     setNextTypeWillPushBuffer(false)
   }
-  useHotkey('Backspace', backspace)
 
   const clearBuffer = () => {
     setBuffer('0')
     setNextTypeWillPushBuffer(false)
     setNextTypeWillClearBuffer(false)
   }
-  useHotkey('shift+Backspace', clearBuffer)
 
   const clearAll = () => {
     clearBuffer()
     setStack([])
     setAltEnabled(false)
   }
-  useHotkey('ctrl+Backspace', clearAll)
 
   const willClearAll = !nextTypeWillClearBuffer && buffer === '0'
 
@@ -263,39 +343,26 @@ const Calculator = () => {
   }
 
   const opPercent = unaryOp((x) => x / 100)
-  useHotkey('shift+Digit5', opPercent)
 
   const opReciprocal = unaryOp((x) => 1 / x)
-  useHotkey('shift+Digit4', opReciprocal)
 
   const opSquare = unaryOp(x => x * x)
-  useHotkey('shift+Digit6', opSquare)
 
   const opExponent = binaryOp((a, b) => Math.pow(a, b))
 
   const opSquareRoot = unaryOp((x) => Math.sqrt(x))
-  useHotkey('shift+ctrl+Digit6', opSquareRoot)
 
   const opNRoot = binaryOp((a, b) => Math.pow(a, 1/b))
 
   const opDivide = binaryOp((a, b) => a / b)
-  useHotkey('NumpadDivide', opDivide)
-  useHotkey('Slash', opDivide)
 
   const opMultiply = binaryOp((a, b) => a * b)
-  useHotkey('NumpadMultiply', opMultiply)
-  useHotkey('shift+Digit8', opMultiply)
 
   const opSubtract = binaryOp((a, b) => a - b)
-  useHotkey('NumpadSubtract', opSubtract)
-  useHotkey('Minus', opSubtract)
 
   const opAdd = binaryOp((a, b) => a + b)
-  useHotkey('NumpadAdd', opAdd)
-  useHotkey('shift+Equal', opAdd)
 
   const opInvertSign = unaryOp((x) => -x)
-  useHotkey('shift+Minus', opInvertSign)
 
   const [degrees, setDegrees] = useLocalStorage('calculator-degrees', false)
   const toggleDegrees = () => {
@@ -407,46 +474,46 @@ const Calculator = () => {
 
         <div className="calculator-buttons">
           <CalculatorButton action={toggle2nd} className={altEnabled ? 'calculator-button-active' : ''}>2<sup>nd</sup></CalculatorButton>
-          <CalculatorButton action={opPercent}>%</CalculatorButton>
-          <CalculatorButton action={clearOrClearAll}>
+          <CalculatorButton action={opPercent} shortcuts="shift+Digit5">%</CalculatorButton>
+          <CalculatorButton action={clearOrClearAll} shortcuts="ctrl+Backspace">
             {willClearAll ? 'C' : 'CE'}
           </CalculatorButton>
-          <CalculatorButton action={backspace}>⌫</CalculatorButton>
+          <CalculatorButton action={backspace} shortcuts="Backspace">⌫</CalculatorButton>
 
-          <CalculatorButton action={opReciprocal}>⅟𝑥</CalculatorButton>
+          <CalculatorButton action={opReciprocal} shortcuts="shift+Digit4">⅟𝑥</CalculatorButton>
           {altEnabled
             ? <CalculatorButton action={opExponent} light>𝑥<sup>𝑦</sup></CalculatorButton>
-            : <CalculatorButton action={opSquare}>𝑥<sup>2</sup></CalculatorButton>
+            : <CalculatorButton action={opSquare} shortcuts="shift+Digit6">𝑥<sup>2</sup></CalculatorButton>
           }
           {altEnabled
             ? <CalculatorButton action={opNRoot} light><sup>𝑦</sup>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
-            : <CalculatorButton action={opSquareRoot}>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
+            : <CalculatorButton action={opSquareRoot} shortcuts="shift+ctrl+Digit6">√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
           }
-          <CalculatorButton action={opDivide}>÷</CalculatorButton>
+          <CalculatorButton action={opDivide} shortcuts={['NumpadDivide', 'Slash']}>÷</CalculatorButton>
 
           <DigitButton digit={7} />
           <DigitButton digit={8} />
           <DigitButton digit={9} />
-          <CalculatorButton action={opMultiply}>&times;</CalculatorButton>
+          <CalculatorButton action={opMultiply} shortcuts={['NumpadMultiply', 'shift+Digit8']}>&times;</CalculatorButton>
 
           <DigitButton digit={4} />
           <DigitButton digit={5} />
           <DigitButton digit={6} />
-          <CalculatorButton action={opSubtract}>&minus;</CalculatorButton>
+          <CalculatorButton action={opSubtract} shortcuts={['NumpadSubtract', 'Minus']}>&minus;</CalculatorButton>
 
           <DigitButton digit={1} />
           <DigitButton digit={2} />
           <DigitButton digit={3} />
-          <CalculatorButton action={opAdd}>+</CalculatorButton>
+          <CalculatorButton action={opAdd} shortcuts={['NumpadAdd', 'shift+Equal']}>+</CalculatorButton>
 
-          <CalculatorButton dark action={opInvertSign}>
+          <CalculatorButton dark action={opInvertSign} shortcuts="shift+Minus">
             &plusmn;
           </CalculatorButton>
           <DigitButton digit={0} />
-          <CalculatorButton dark action={typePeriod}>
+          <CalculatorButton dark action={typePeriod} shortcuts={['Period', 'NumpadDecimal']}>
             .
           </CalculatorButton>
-          <CalculatorButton light action={pushBuffer}>
+          <CalculatorButton light action={pushBuffer} shortcuts="Enter">
             ⎆
           </CalculatorButton>
         </div>
