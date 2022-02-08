@@ -475,7 +475,7 @@ const Calculator = () => {
         <div className="calculator-buttons">
           <CalculatorButton action={toggle2nd} className={altEnabled ? 'calculator-button-active' : ''}>2<sup>nd</sup></CalculatorButton>
           <CalculatorButton action={opPercent} shortcuts="shift+Digit5">%</CalculatorButton>
-          <CalculatorButton action={clearOrClearAll} shortcuts="ctrl+Backspace">
+          <CalculatorButton action={clearOrClearAll} shortcuts={['ctrl+Backspace', 'shift+Backspace']}>
             {willClearAll ? 'C' : 'CE'}
           </CalculatorButton>
           <CalculatorButton action={backspace} shortcuts="Backspace">⌫</CalculatorButton>
