@@ -486,12 +486,12 @@ const Calculator = () => {
 
           <CalculatorButton action={opReciprocal} shortcuts="shift+Digit4">⅟𝑥</CalculatorButton>
           {altEnabled
-            ? <CalculatorButton action={opExponent} light>𝑥<sup>𝑦</sup></CalculatorButton>
-            : <CalculatorButton action={opSquare} shortcuts="shift+Digit6">𝑥<sup>2</sup></CalculatorButton>
+            ? <CalculatorButton key="exponent" action={opExponent} light>𝑥<sup>𝑦</sup></CalculatorButton>
+            : <CalculatorButton key="square" action={opSquare} shortcuts="shift+Digit6">𝑥<sup>2</sup></CalculatorButton>
           }
           {altEnabled
-            ? <CalculatorButton action={opNRoot} light><sup>𝑦</sup>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
-            : <CalculatorButton action={opSquareRoot} shortcuts="shift+ctrl+Digit6">√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
+            ? <CalculatorButton key="nroot" action={opNRoot} light><sup>𝑦</sup>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
+            : <CalculatorButton key="squareroot" action={opSquareRoot} shortcuts="shift+ctrl+Digit6">√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
           }
           <CalculatorButton action={opDivide} shortcuts={['NumpadDivide', 'Slash']}>÷</CalculatorButton>
 
