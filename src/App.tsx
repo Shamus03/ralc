@@ -2,6 +2,7 @@ import { ButtonHTMLAttributes, createContext, createRef, ReactFragment, useConte
 import PWAPrompt from 'react-ios-pwa-prompt'
 import formatNumber from './format-number'
 import './App.css'
+import { BeforeInstallPromptEvent } from '.'
 
 type ClassSpec = string | boolean | undefined | { [className: string]: boolean }
 const makeClasses = (classes: ClassSpec | ClassSpec[]): string => {
@@ -528,6 +529,11 @@ const VersionIndicator = () => {
   useEventListener('SW_UPDATE_WAITING', e => {
     setConfirmUpdate(() => e.detail)
   })
+  const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<BeforeInstallPromptEvent>()
+  useEventListener('beforeinstallprompt', e => {
+    e.preventDefault()
+    setDeferredInstallPrompt(e)
+  })
   return (
     <div className="version">
       Ralc v{process.env.REACT_APP_VERSION ?? 0}
@@ -538,6 +544,19 @@ const VersionIndicator = () => {
           confirmUpdate()
         }}>
           Update
+        </a>
+      </>}
+      {deferredInstallPrompt && <>
+        &nbsp;
+        <a href="#" onClick={async e => {
+          e.preventDefault()
+          deferredInstallPrompt.prompt()
+          const choice = await deferredInstallPrompt.userChoice
+          if (choice.outcome === 'accepted') {
+            setDeferredInstallPrompt(undefined)
+          }
+        }}>
+          Install
         </a>
       </>}
     </div>

@@ -13,9 +13,17 @@ ReactDOM.render(
   document.getElementById('root'),
 )
 
+export declare class BeforeInstallPromptEvent extends Event {
+  readonly userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed',
+  }>
+  prompt(): Promise<void>
+}
+
 declare global {
   interface WindowEventMap {
-    'SW_UPDATE_WAITING': CustomEvent<() => void>,
+    'SW_UPDATE_WAITING': CustomEvent<() => void>
+    'beforeinstallprompt': BeforeInstallPromptEvent
   }
 }
 
