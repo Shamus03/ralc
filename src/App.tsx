@@ -54,11 +54,13 @@ const CalculatorButton = ({
   if (shortcuts) {
     shortcuts = coerceArray(shortcuts)
     for (const shortcut of shortcuts) {
-      useEventListener('keydown', modifyForHotkey(shortcut, onPress))
-      useEventListener('keyup', modifyForHotkey(shortcut, onRelease))
-
-      // Releasing the modifier before the main button should "cancel" the keypress
-      useEventListener('keyup', modifyForHotkey(shortcut, onDragOut, { ignoreModifiers: true }))
+      useEventListener('keydown', modifyForHotkey(shortcut, () => {
+        action()
+        setPressed(true)
+        setTimeout(() => {
+          setPressed(false)
+        }, 70)
+      }))
     }
   }
 
