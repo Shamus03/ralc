@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, createContext, createRef, Fragment, ReactFragment, useContext, useEffect, useRef, useState } from 'react'
+import { ButtonHTMLAttributes, createContext, createRef, ReactFragment, useContext, useEffect, useRef, useState } from 'react'
 import PWAPrompt from 'react-ios-pwa-prompt'
 import formatNumber from './format-number'
 import './App.css'
@@ -455,7 +455,7 @@ const Calculator = () => {
           <CalculatorButton action={constE}>e</CalculatorButton>
 
           {altEnabled
-            ? <Fragment>
+            ? <>
               <CalculatorButton action={opAsin} light>sin<sup>-1</sup></CalculatorButton>
               <CalculatorButton action={opAcos} light>cos<sup>-1</sup></CalculatorButton>
               <CalculatorButton action={opAtan} light>tan<sup>-1</sup></CalculatorButton>
@@ -463,8 +463,8 @@ const Calculator = () => {
               <CalculatorButton action={opAsinh} light>sinh<sup>-1</sup></CalculatorButton>
               <CalculatorButton action={opAcosh} light>cosh<sup>-1</sup></CalculatorButton>
               <CalculatorButton action={opAtanh} light>tanh<sup>-1</sup></CalculatorButton>
-            </Fragment>
-            : <Fragment>
+            </>
+            : <>
               <CalculatorButton action={opSin}>sin</CalculatorButton>
               <CalculatorButton action={opCos}>cos</CalculatorButton>
               <CalculatorButton action={opTan}>tan</CalculatorButton>
@@ -472,7 +472,7 @@ const Calculator = () => {
               <CalculatorButton action={opSinh}>sinh</CalculatorButton>
               <CalculatorButton action={opCosh}>cosh</CalculatorButton>
               <CalculatorButton action={opTanh}>tanh</CalculatorButton>
-            </Fragment>}
+            </>}
 
         </div>
 
@@ -531,7 +531,7 @@ const VersionIndicator = () => {
   return (
     <div className="version">
       Ralc v{process.env.REACT_APP_VERSION ?? 0}
-      {confirmUpdate && <Fragment>
+      {confirmUpdate && <>
         &nbsp;
         <a href="#" onClick={e => {
           e.preventDefault()
@@ -539,15 +539,15 @@ const VersionIndicator = () => {
         }}>
           Update
         </a>
-      </Fragment>}
+      </>}
     </div>
   )
 }
 
 export default function App() {
-  return <Fragment>
+  return <>
     <VersionIndicator />
     <Calculator />
     <PWAPrompt />
-  </Fragment>
+  </>
 }
