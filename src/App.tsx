@@ -496,7 +496,7 @@ const Calculator = () => {
           {altEnabled || <CalculatorButton key="squareroot" action={opSquareRoot} shortcuts="shift+ctrl+Digit6">√<span className="text-decoration-overline">𝑥</span></CalculatorButton>}
           {altEnabled && <CalculatorButton key="nroot" action={opNRoot} light><sup>𝑦</sup>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>}
           {altEnabled || <CalculatorButton action={opDivide} shortcuts={['NumpadDivide', 'Slash']}>÷</CalculatorButton>}
-          {altEnabled && <CalculatorButton action={opModulus}>Mod</CalculatorButton>}
+          {altEnabled && <CalculatorButton action={opModulus} light>Mod</CalculatorButton>}
 
           <DigitButton digit={7} />
           <DigitButton digit={8} />
