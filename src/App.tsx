@@ -363,6 +363,8 @@ const Calculator = () => {
 
   const opDivide = binaryOp((a, b) => a / b)
 
+  const opModulus = binaryOp((a, b) => a % b)
+
   const opMultiply = binaryOp((a, b) => a * b)
 
   const opSubtract = binaryOp((a, b) => a - b)
@@ -493,7 +495,8 @@ const Calculator = () => {
           {altEnabled && <CalculatorButton action={opExponent} light>𝑥<sup>𝑦</sup></CalculatorButton>}
           {altEnabled || <CalculatorButton key="squareroot" action={opSquareRoot} shortcuts="shift+ctrl+Digit6">√<span className="text-decoration-overline">𝑥</span></CalculatorButton>}
           {altEnabled && <CalculatorButton key="nroot" action={opNRoot} light><sup>𝑦</sup>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>}
-          <CalculatorButton action={opDivide} shortcuts={['NumpadDivide', 'Slash']}>÷</CalculatorButton>
+          {altEnabled || <CalculatorButton action={opDivide} shortcuts={['NumpadDivide', 'Slash']}>÷</CalculatorButton>}
+          {altEnabled && <CalculatorButton action={opModulus}>Mod</CalculatorButton>}
 
           <DigitButton digit={7} />
           <DigitButton digit={8} />
