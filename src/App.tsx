@@ -520,7 +520,7 @@ const Calculator = () => {
             .
           </CalculatorButton>
           <CalculatorButton light action={pushBuffer} shortcuts="Enter">
-            ⎆
+            ⏎
           </CalculatorButton>
         </div>
       </CalculatorContext.Provider>
