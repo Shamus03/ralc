@@ -320,7 +320,6 @@ const Calculator = () => {
   const willClearAll = !nextTypeWillClearBuffer && buffer === '0'
 
   const clearOrClearAll = () => {
-    console.log('clear')
     if (willClearAll) {
       clearAll()
     } else {
