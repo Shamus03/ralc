@@ -14,22 +14,20 @@
   --scrollbar-thumb-hover-color: #555;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background-color: #1f1f1f;
-    --text-color: white;
-    --muted-text-color: #c5c5c5;
-    --very-muted-text-color: #646464;
+:root .theme-dark {
+  --background-color: #1f1f1f;
+  --text-color: white;
+  --muted-text-color: #c5c5c5;
+  --very-muted-text-color: #646464;
 
-    --calculator-button-color: #131313;
-    --calculator-button-dark-color: #060606;
-    --calculator-button-light-color: #2c2c2c;
-    --calculator-button-hover-color: #4b4b4b;
-    --calculator-button-active-color: #5f6164;
+  --calculator-button-color: #131313;
+  --calculator-button-dark-color: #060606;
+  --calculator-button-light-color: #2c2c2c;
+  --calculator-button-hover-color: #4b4b4b;
+  --calculator-button-active-color: #5f6164;
 
-    --scrollbar-thumb-color: #686868;
-    --scrollbar-thumb-hover-color: #555;
-  }
+  --scrollbar-thumb-color: #686868;
+  --scrollbar-thumb-hover-color: #555;
 }
 
 body {
@@ -51,7 +49,9 @@ html {
   touch-action: none;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   width: 100%;
   height: 100%;
 }
@@ -81,16 +81,16 @@ html, body, #root {
 
 @media (orientation: landscape) {
   .calculator {
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-areas:
-    'calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top'
-    'calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top'
-    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
-    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
-    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
-    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
-    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
-    'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons';
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-areas:
+      'calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top'
+      'calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top calculator-top'
+      'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
+      'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
+      'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
+      'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
+      'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons'
+      'calculator-extra-buttons calculator-extra-buttons calculator-extra-buttons calculator-buttons calculator-buttons calculator-buttons calculator-buttons';
   }
 }
 
@@ -155,6 +155,7 @@ html, body, #root {
 .calculator-button-dark {
   background: var(--calculator-button-dark-color);
 }
+
 .calculator-button-light {
   background: var(--calculator-button-light-color);
 }
@@ -163,11 +164,13 @@ html, body, #root {
   background: var(--calculator-button-hover-color);
 }
 
-.calculator-button.pressed, .calculator-button-active {
+.calculator-button.pressed,
+.calculator-button-active {
   background: var(--calculator-button-active-color);
 }
 
-sup, sub {
+sup,
+sub {
   font-size: 60%;
 }
 

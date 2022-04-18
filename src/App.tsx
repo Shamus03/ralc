@@ -3,6 +3,9 @@ import PWAPrompt from 'react-ios-pwa-prompt'
 import formatNumber from './format-number'
 import './App.css'
 import { BeforeInstallPromptEvent } from '.'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSun, faMoon } from '@fortawesome/free-regular-svg-icons'
+import { faCircleHalfStroke } from '@fortawesome/free-solid-svg-icons'
 
 type ClassSpec = string | boolean | undefined | { [className: string]: boolean }
 const makeClasses = (classes: ClassSpec | ClassSpec[]): string => {
@@ -186,7 +189,7 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, React.Dispatch<Re
   return [storedValue, setValue]
 }
 
-function coerceArray<T> (v: (T | T[])): T[] {
+function coerceArray<T>(v: (T | T[])): T[] {
   if (Array.isArray(v)) {
     return v
   }
@@ -358,7 +361,7 @@ const Calculator = () => {
 
   const opSquareRoot = unaryOp((x) => Math.sqrt(x))
 
-  const opNRoot = binaryOp((a, b) => Math.pow(a, 1/b))
+  const opNRoot = binaryOp((a, b) => Math.pow(a, 1 / b))
 
   const opDivide = binaryOp((a, b) => a / b)
 
@@ -427,6 +430,52 @@ const Calculator = () => {
   const constPi = makeConst(Math.PI)
   const constE = makeConst(Math.E)
 
+  enum ThemeOption {
+    Light = 'light',
+    Dark = 'dark',
+    SystemDefault = 'system_default',
+  }
+
+  const [selectedTheme, setSelectedTheme] = useLocalStorage('selected-theme', ThemeOption.SystemDefault)
+  const toggleTheme = () => {
+    setSelectedTheme(theme => {
+      switch (theme) {
+      case ThemeOption.Light: return ThemeOption.Dark
+      case ThemeOption.Dark: return ThemeOption.SystemDefault
+      default: return ThemeOption.Light
+      }
+    })
+  }
+
+  useEffect(() => {
+    switch (selectedTheme) {
+    case ThemeOption.Light:
+      document.body.classList.remove('theme-dark')
+      break
+    case ThemeOption.Dark:
+      document.body.classList.add('theme-dark')
+      break
+    case ThemeOption.SystemDefault:
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('theme-dark')
+      } else {
+        document.body.classList.remove('theme-dark')
+      }
+      break
+    }
+  })
+
+  const getThemeIcon = (theme: ThemeOption) => {
+    switch (theme) {
+    case ThemeOption.Light:
+      return <FontAwesomeIcon icon={faSun}></FontAwesomeIcon>
+    case ThemeOption.Dark:
+      return <FontAwesomeIcon icon={faMoon}></FontAwesomeIcon>
+    case ThemeOption.SystemDefault:
+      return <FontAwesomeIcon icon={faCircleHalfStroke}></FontAwesomeIcon>
+    }
+  }
+
   let nextStackId = 0
 
   return (
@@ -442,7 +491,9 @@ const Calculator = () => {
 
       <CalculatorContext.Provider value={{ typeDigit }}>
         <div className="calculator-extra-buttons">
-          <div></div>
+          <CalculatorButton action={toggleTheme}>
+            {getThemeIcon(selectedTheme)}
+          </CalculatorButton>
           <div></div>
           <div></div>
 
