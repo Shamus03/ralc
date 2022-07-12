@@ -268,10 +268,11 @@ const Calculator = () => {
   }
   useHotkey('ctrl+KeyV', pasteFromClipboard)
 
-  const popStack = () => {
+  const opPopStack = () => {
     setStack(stack.slice(0, -1))
+    setAltEnabled(false)
   }
-  useHotkey('ctrl+Delete', popStack)
+  useHotkey('ctrl+Delete', opPopStack)
 
   const normalizeBuffer = (b: string) =>
     b.replace(/^0+(?=\d)/g, '').replace(/^\.$/, '0.')
@@ -299,7 +300,7 @@ const Calculator = () => {
   }
 
   const backspace = () => {
-    if (buffer.length === 1) {
+    if (buffer.length === 1 || (buffer.length === 2 && buffer.charAt(0) === '-')) {
       setBuffer('0')
     } else {
       setBuffer(buffer.slice(0, -1))
@@ -307,6 +308,12 @@ const Calculator = () => {
     setNextTypeWillClearBuffer(false)
     setNextTypeWillPushBuffer(false)
   }
+
+  const opSwap = () => {
+    setStack(stack.slice(0, -2).concat(stack.slice(-2).reverse()))
+    setAltEnabled(false)
+  }
+  useHotkey('\\', opSwap)
 
   const clearBuffer = () => {
     setBuffer('0')
@@ -537,9 +544,11 @@ const Calculator = () => {
           <CalculatorButton action={clearOrClearAll} shortcuts={['ctrl+Backspace', 'shift+Backspace']}>
             {willClearAll ? 'C' : 'CE'}
           </CalculatorButton>
-          <CalculatorButton action={backspace} shortcuts="Backspace">⌫</CalculatorButton>
+          {altEnabled || <CalculatorButton action={backspace} shortcuts="Backspace">⌫</CalculatorButton>}
+          {altEnabled && <CalculatorButton action={opPopStack} shortcuts="ctrl+Delete">Drop</CalculatorButton>}
 
-          <CalculatorButton action={opReciprocal} shortcuts="shift+Digit4">⅟𝑥</CalculatorButton>
+          {altEnabled || <CalculatorButton action={opReciprocal} shortcuts="shift+Digit4">⅟𝑥</CalculatorButton>}
+          {altEnabled && <CalculatorButton action={opSwap} shortcuts="\" light>Swap</CalculatorButton>}
 
           {altEnabled || <CalculatorButton action={opSquare} shortcuts="shift+Digit6">𝑥<sup>2</sup></CalculatorButton>}
           {altEnabled && <CalculatorButton action={opExponent} light>𝑥<sup>𝑦</sup></CalculatorButton>}
