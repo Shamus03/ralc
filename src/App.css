@@ -169,6 +169,10 @@ body,
   background: var(--calculator-button-active-color);
 }
 
+.hidden {
+  display: none;
+}
+
 sup,
 sub {
   font-size: 60%;

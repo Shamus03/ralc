@@ -28,14 +28,24 @@ const CalculatorButton = ({
   className,
   action,
   shortcuts,
+  primary,
+  alt,
 }: {
   children: ReactFragment;
   dark?: boolean;
   light?: boolean;
   className?: string,
   action: () => void;
-  shortcuts?: string | string[],
-}) => {
+    shortcuts?: string | string[],
+  primary?: boolean,
+  alt?: boolean,
+  }) => {
+  if (primary && alt) {
+    throw new Error('cannot set both primary and alt')
+  }
+
+  const { altEnabled } = useContext(CalculatorContext)
+
   const [hovered, setHovered] = useState(false)
   const [pressed, setPressed] = useState(false)
 
@@ -112,6 +122,7 @@ const CalculatorButton = ({
       type="button"
       className={makeClasses([
         'calculator-button',
+        (alt && !altEnabled || primary && altEnabled) && 'hidden',
         dark && 'calculator-button-dark',
         light && 'calculator-button-light',
         { pressed, hovered },
@@ -132,6 +143,7 @@ CalculatorButton.defaultProps = {
 const CalculatorContext = createContext({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   typeDigit: (digit: number) => { /* noop */ },
+  altEnabled: false,
 })
 
 const DigitButton = ({ digit }: { digit: number }) => {
@@ -196,22 +208,20 @@ function coerceArray<T>(v: (T | T[])): T[] {
   return [v]
 }
 
-const modifyForHotkey = (key: string, handler: (e: KeyboardEvent) => void, opts?: { ignoreModifiers?: boolean }): (e: KeyboardEvent) => void => {
-  let ctrl: boolean | undefined = false
-  let shift: boolean | undefined = false
+const ctrlModifier = 'ctrl+'
+const modifyForHotkey = (key: string, handler: (e: KeyboardEvent) => void): (e: KeyboardEvent) => void => {
+  let ctrl = false
   let keyToListen: string | number = ''
-  if (typeof key === 'string' && key.includes('+')) {
-    const spl = key.split('+');
-    [keyToListen] = spl.slice(-1)
-    ctrl = opts?.ignoreModifiers ? undefined : spl.includes('ctrl')
-    shift = opts?.ignoreModifiers ? undefined : spl.includes('shift')
+
+  if (key.startsWith(ctrlModifier)) {
+    ctrl = true
+    keyToListen = key.slice(ctrlModifier.length)
   } else {
     keyToListen = key
   }
 
   return (e: KeyboardEvent) => {
     if (ctrl !== undefined && ctrl !== e.ctrlKey) return
-    if (shift !== undefined && shift !== e.shiftKey) return
     if (e.key === keyToListen || e.code === keyToListen) {
       handler(e)
     }
@@ -272,7 +282,6 @@ const Calculator = () => {
     setStack(stack.slice(0, -1))
     setAltEnabled(false)
   }
-  useHotkey('ctrl+Delete', opPopStack)
 
   const normalizeBuffer = (b: string) =>
     b.replace(/^0+(?=\d)/g, '').replace(/^\.$/, '0.')
@@ -313,7 +322,6 @@ const Calculator = () => {
     setStack(stack.slice(0, -2).concat(stack.slice(-2).reverse()))
     setAltEnabled(false)
   }
-  useHotkey('\\', opSwap)
 
   const clearBuffer = () => {
     setBuffer('0')
@@ -496,7 +504,7 @@ const Calculator = () => {
         <div className="calculator-buffer">{formatNumber(buffer)}</div>
       </div>
 
-      <CalculatorContext.Provider value={{ typeDigit }}>
+      <CalculatorContext.Provider value={{ typeDigit, altEnabled }}>
         <div className="calculator-extra-buttons">
           <CalculatorButton action={toggleTheme}>
             {getThemeIcon(selectedTheme)}
@@ -516,63 +524,58 @@ const Calculator = () => {
           <CalculatorButton action={constPi}>&pi;</CalculatorButton>
           <CalculatorButton action={constE}>e</CalculatorButton>
 
-          {altEnabled
-            ? <>
-              <CalculatorButton action={opAsin} light>sin<sup>-1</sup></CalculatorButton>
-              <CalculatorButton action={opAcos} light>cos<sup>-1</sup></CalculatorButton>
-              <CalculatorButton action={opAtan} light>tan<sup>-1</sup></CalculatorButton>
+          <CalculatorButton action={opAsin} light alt>sin<sup>-1</sup></CalculatorButton>
+          <CalculatorButton action={opAcos} light alt>cos<sup>-1</sup></CalculatorButton>
+          <CalculatorButton action={opAtan} light alt>tan<sup>-1</sup></CalculatorButton>
 
-              <CalculatorButton action={opAsinh} light>sinh<sup>-1</sup></CalculatorButton>
-              <CalculatorButton action={opAcosh} light>cosh<sup>-1</sup></CalculatorButton>
-              <CalculatorButton action={opAtanh} light>tanh<sup>-1</sup></CalculatorButton>
-            </>
-            : <>
-              <CalculatorButton action={opSin}>sin</CalculatorButton>
-              <CalculatorButton action={opCos}>cos</CalculatorButton>
-              <CalculatorButton action={opTan}>tan</CalculatorButton>
+          <CalculatorButton action={opAsinh} light alt>sinh<sup>-1</sup></CalculatorButton>
+          <CalculatorButton action={opAcosh} light alt>cosh<sup>-1</sup></CalculatorButton>
+          <CalculatorButton action={opAtanh} light alt>tanh<sup>-1</sup></CalculatorButton>
 
-              <CalculatorButton action={opSinh}>sinh</CalculatorButton>
-              <CalculatorButton action={opCosh}>cosh</CalculatorButton>
-              <CalculatorButton action={opTanh}>tanh</CalculatorButton>
-            </>}
+          <CalculatorButton action={opSin} primary>sin</CalculatorButton>
+          <CalculatorButton action={opCos} primary>cos</CalculatorButton>
+          <CalculatorButton action={opTan} primary>tan</CalculatorButton>
 
+          <CalculatorButton action={opSinh} primary>sinh</CalculatorButton>
+          <CalculatorButton action={opCosh} primary>cosh</CalculatorButton>
+          <CalculatorButton action={opTanh} primary>tanh</CalculatorButton>
         </div>
 
         <div className="calculator-buttons">
           <CalculatorButton action={toggle2nd} className={altEnabled ? 'calculator-button-active' : ''}>2<sup>nd</sup></CalculatorButton>
-          <CalculatorButton action={opPercent} shortcuts="shift+Digit5">%</CalculatorButton>
-          <CalculatorButton action={clearOrClearAll} shortcuts={['ctrl+Backspace', 'shift+Backspace']}>
+          <CalculatorButton action={opPercent} shortcuts="%">%</CalculatorButton>
+          <CalculatorButton action={clearOrClearAll} shortcuts={['ctrl+Backspace']}>
             {willClearAll ? 'C' : 'CE'}
           </CalculatorButton>
-          {altEnabled || <CalculatorButton action={backspace} shortcuts="Backspace">⌫</CalculatorButton>}
-          {altEnabled && <CalculatorButton action={opPopStack} shortcuts="ctrl+Delete">Drop</CalculatorButton>}
+          <CalculatorButton action={backspace} shortcuts="Backspace" primary>⌫</CalculatorButton>
+          <CalculatorButton action={opPopStack} shortcuts="ctrl+Delete" alt>Drop</CalculatorButton>
 
-          {altEnabled || <CalculatorButton action={opReciprocal} shortcuts="shift+Digit4">⅟𝑥</CalculatorButton>}
-          {altEnabled && <CalculatorButton action={opSwap} shortcuts="\" light>Swap</CalculatorButton>}
+          <CalculatorButton action={opReciprocal} shortcuts="$" primary>⅟𝑥</CalculatorButton>
+          <CalculatorButton action={opSwap} shortcuts="\" light alt>Swap</CalculatorButton>
 
-          {altEnabled || <CalculatorButton action={opSquare} shortcuts="shift+Digit6">𝑥<sup>2</sup></CalculatorButton>}
-          {altEnabled && <CalculatorButton action={opExponent} light>𝑥<sup>𝑦</sup></CalculatorButton>}
-          {altEnabled || <CalculatorButton key="squareroot" action={opSquareRoot} shortcuts="shift+ctrl+Digit6">√<span className="text-decoration-overline">𝑥</span></CalculatorButton>}
-          {altEnabled && <CalculatorButton key="nroot" action={opNRoot} light><sup>𝑦</sup>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>}
-          {altEnabled || <CalculatorButton action={opDivide} shortcuts={['NumpadDivide', 'Slash']}>÷</CalculatorButton>}
-          {altEnabled && <CalculatorButton action={opModulus} light>Mod</CalculatorButton>}
+          <CalculatorButton action={opSquare} shortcuts="^" primary>𝑥<sup>2</sup></CalculatorButton>
+          <CalculatorButton action={opExponent} light alt>𝑥<sup>𝑦</sup></CalculatorButton>
+          <CalculatorButton action={opSquareRoot} shortcuts="ctrl+^" primary>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
+          <CalculatorButton action={opNRoot} light alt><sup>𝑦</sup>√<span className="text-decoration-overline">𝑥</span></CalculatorButton>
+          <CalculatorButton action={opDivide} shortcuts={['NumpadDivide', 'Slash']} primary>÷</CalculatorButton>
+          <CalculatorButton action={opModulus} light alt>Mod</CalculatorButton>
 
           <DigitButton digit={7} />
           <DigitButton digit={8} />
           <DigitButton digit={9} />
-          <CalculatorButton action={opMultiply} shortcuts={['NumpadMultiply', 'shift+Digit8']}>&times;</CalculatorButton>
+          <CalculatorButton action={opMultiply} shortcuts={['NumpadMultiply', '*']}>&times;</CalculatorButton>
 
           <DigitButton digit={4} />
           <DigitButton digit={5} />
           <DigitButton digit={6} />
-          <CalculatorButton action={opSubtract} shortcuts={['NumpadSubtract', 'Minus']}>&minus;</CalculatorButton>
+          <CalculatorButton action={opSubtract} shortcuts={['NumpadSubtract', '-']}>&minus;</CalculatorButton>
 
           <DigitButton digit={1} />
           <DigitButton digit={2} />
           <DigitButton digit={3} />
-          <CalculatorButton action={opAdd} shortcuts={['NumpadAdd', 'shift+Equal']}>+</CalculatorButton>
+          <CalculatorButton action={opAdd} shortcuts={['NumpadAdd', '+']}>+</CalculatorButton>
 
-          <CalculatorButton dark action={opInvertSign} shortcuts="shift+Minus">
+          <CalculatorButton dark action={opInvertSign} shortcuts="_">
             &plusmn;
           </CalculatorButton>
           <DigitButton digit={0} />
