@@ -267,7 +267,9 @@ const Calculator = () => {
     const text = await navigator.clipboard.readText()
     const lines = text.split('\n')
     const nums = lines
-      .map((l) => +l.replace(/[,]/g, ''))
+      .map((l) => +l
+        .replace(/^\$ */, '')
+        .replace(/[,]/g, ''))
       .filter((n) => !Number.isNaN(n))
     if (!nums.length) return
 
