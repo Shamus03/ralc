@@ -146,6 +146,7 @@ body,
   align-items: center;
   justify-content: center;
   user-select: none;
+  position: relative;
 }
 
 .calculator-button:focus-visible {
@@ -167,6 +168,14 @@ body,
 .calculator-button.pressed,
 .calculator-button-active {
   background: var(--calculator-button-active-color);
+}
+
+.calculator-button .shortcut-hint {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 40%;
+  text-align: right;
 }
 
 .hidden {

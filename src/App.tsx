@@ -22,21 +22,27 @@ const makeClasses = (classes: ClassSpec | ClassSpec[]): string => {
 }
 
 const CalculatorButton = ({
+  active,
   children,
   dark,
   light,
   className,
   action,
+  toggle,
   shortcuts,
+  shortcutHint,
   primary,
   alt,
 }: {
+  active?: boolean,
   children: ReactFragment;
   dark?: boolean;
   light?: boolean;
   className?: string,
-  action: () => void;
+  action?: () => void;
+  toggle?: (v: boolean) => void;
   shortcuts?: string | string[],
+  shortcutHint?: string,
   primary?: boolean,
   alt?: boolean,
   }) => {
@@ -44,7 +50,15 @@ const CalculatorButton = ({
     throw new Error('cannot set both primary and alt')
   }
 
-  const { altEnabled } = useContext(CalculatorContext)
+  if (action && toggle) {
+    throw new Error('cannot set both action and toggle')
+  }
+
+  if (!action && !toggle) {
+    throw new Error('must set either action or toggle')
+  }
+
+  const { altEnabled, showHints } = useContext(CalculatorContext)
 
   const [hovered, setHovered] = useState(false)
   const [pressed, setPressed] = useState(false)
@@ -57,9 +71,18 @@ const CalculatorButton = ({
     setPressed(false)
   }
 
+  const actionOrToggle = () => {
+    if (action) {
+      action()
+    }
+    if (toggle) {
+      toggle(!active)
+    }
+  }
+
   const onRelease = () => {
     if (pressed) {
-      action()
+      actionOrToggle()
     }
     setPressed(false)
   }
@@ -67,13 +90,23 @@ const CalculatorButton = ({
   if (shortcuts) {
     shortcuts = coerceArray(shortcuts)
     for (const shortcut of shortcuts) {
-      useEventListener('keydown', modifyForHotkey(shortcut, () => {
-        action()
-        setPressed(true)
-        setTimeout(() => {
-          setPressed(false)
-        }, 70)
-      }))
+      if (action) {
+        useEventListener('keydown', modifyForHotkey(shortcut, () => {
+          action()
+          setPressed(true)
+          setTimeout(() => {
+            setPressed(false)
+          }, 70)
+        }))
+      }
+      if (toggle) {
+        useEventListener('keydown', modifyForHotkey(shortcut, () => {
+          toggle(true)
+        }))
+        useEventListener('keyup', modifyForHotkey(shortcut, () => {
+          toggle(false)
+        }))
+      }
     }
   }
 
@@ -122,6 +155,7 @@ const CalculatorButton = ({
       type="button"
       className={makeClasses([
         'calculator-button',
+        (active && 'calculator-button-active'),
         (alt && !altEnabled || primary && altEnabled) && 'hidden',
         dark && 'calculator-button-dark',
         light && 'calculator-button-light',
@@ -131,6 +165,9 @@ const CalculatorButton = ({
       {...events}
     >
       {children}
+      {showHints && <span className="shortcut-hint">
+        {coerceArray(shortcutHint ?? shortcuts).map(s => <div key={s}>{s}</div>)}
+      </span>}
     </button>
   )
 }
@@ -142,8 +179,9 @@ CalculatorButton.defaultProps = {
 
 const CalculatorContext = createContext({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  typeDigit: (digit: number) => { /* noop */ },
+  typeDigit: (_digit: number) => { /* noop */ },
   altEnabled: false,
+  showHints: false,
 })
 
 const DigitButton = ({ digit }: { digit: number }) => {
@@ -348,17 +386,6 @@ const Calculator = () => {
   }
 
   const [altEnabled, setAltEnabled] = useState(false)
-  const toggle2nd = () => {
-    setAltEnabled(!altEnabled)
-  }
-
-  useEventListener('keydown', modifyForHotkey('Alt', () => {
-    setAltEnabled(true)
-  }))
-
-  useEventListener('keyup', modifyForHotkey('Alt', () => {
-    setAltEnabled(false)
-  }))
 
   const unaryOp = (fn: (x: number) => number) => () => {
     setBufferN(fn(+buffer))
@@ -472,6 +499,8 @@ const Calculator = () => {
     })
   }
 
+  const [showHints, setShowHints] = useLocalStorage('show-hints', false)
+
   useEffect(() => {
     switch (selectedTheme) {
     case ThemeOption.Light:
@@ -514,12 +543,14 @@ const Calculator = () => {
         <div className="calculator-buffer">{formatNumber(buffer)}</div>
       </div>
 
-      <CalculatorContext.Provider value={{ typeDigit, altEnabled }}>
+      <CalculatorContext.Provider value={{ typeDigit, altEnabled, showHints }}>
         <div className="calculator-extra-buttons">
           <CalculatorButton action={toggleTheme}>
             {getThemeIcon(selectedTheme)}
           </CalculatorButton>
-          <div></div>
+          <CalculatorButton toggle={setShowHints} active={showHints}>
+            Hints
+          </CalculatorButton>
           <div></div>
 
           <div></div>
@@ -552,7 +583,7 @@ const Calculator = () => {
         </div>
 
         <div className="calculator-buttons">
-          <CalculatorButton action={toggle2nd} className={altEnabled ? 'calculator-button-active' : ''}>2<sup>nd</sup></CalculatorButton>
+          <CalculatorButton toggle={setAltEnabled} shortcuts="Alt" active={altEnabled}>2<sup>nd</sup></CalculatorButton>
           <CalculatorButton action={opPercent} shortcuts="%">%</CalculatorButton>
           <CalculatorButton action={clearOrClearAll} shortcuts={['ctrl+Backspace']}>
             {willClearAll ? 'C' : 'CE'}
