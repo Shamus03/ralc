@@ -36,7 +36,7 @@ const CalculatorButton = ({
   light?: boolean;
   className?: string,
   action: () => void;
-    shortcuts?: string | string[],
+  shortcuts?: string | string[],
   primary?: boolean,
   alt?: boolean,
   }) => {
@@ -351,6 +351,14 @@ const Calculator = () => {
   const toggle2nd = () => {
     setAltEnabled(!altEnabled)
   }
+
+  useEventListener('keydown', modifyForHotkey('Alt', () => {
+    setAltEnabled(true)
+  }))
+
+  useEventListener('keyup', modifyForHotkey('Alt', () => {
+    setAltEnabled(false)
+  }))
 
   const unaryOp = (fn: (x: number) => number) => () => {
     setBufferN(fn(+buffer))
